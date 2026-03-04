@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/ServerMaintenance/CommandExecute.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/ServerMaintenance/IndexOptimize.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/ServerMaintenance/MaintenanceSolution.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/ServerMaintenance/Queue.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/ServerMaintenance/QueueDatabase.sql" dialect="GenericSQL" />
+  </component>
+</project>
