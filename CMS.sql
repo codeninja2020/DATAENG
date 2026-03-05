@@ -4,17 +4,17 @@
    Replaces: SSIS CMS package (download_files_from_s3_bucket.dtsx + 3 child loaders)
 
    What it does:
-     1. Downloads CSV files from s3://bi-prod.tenproduct.com/CMS/ to D:\S3\CMS\
-     2. Ensures the cms schema and tables exist
-     3. Truncates cms.Dining, cms.Hotels, cms.Locations
+     1. Downloads CSV files from s3://bi-staging.tenproduct.com/CMS/ to D:\S3\CMS\
+     2. Ensures destination dbo tables exist
+     3. Truncates dbo.Dining, dbo.Hotels, dbo.Locations
      4. BULK INSERTs pipe-delimited CSVs into each table (with audit columns)
      5. Cleans up local files from D:\S3\CMS\
 
-   S3 bucket:  bi-prod.tenproduct.com
+   S3 bucket:  bi-staging.tenproduct.com
    S3 prefix:  CMS/
    CSV format: Pipe-delimited (|), UTF-8, header row
-   Dest DB:    TenDataWarehouse
-   Dest schema: cms
+   Dest DB:    TEN_DATAWAREHOUSE
+   Dest schema: dbo
 
    RDS procedures used:
      - msdb.dbo.rds_download_from_s3  (download CSV from S3)
@@ -61,7 +61,7 @@ EXEC @ReturnCode = msdb.dbo.sp_add_job
     @notify_level_netsend  = 0,
     @notify_level_page     = 0,
     @delete_level          = 0,
-    @description     = N'Downloads CMS CSV files (Dining, Hotels, Locations) from S3 and loads into TenDataWarehouse.cms schema. Replaces the SSIS CMS package.',
+    @description     = N'Downloads CMS CSV files (Dining, Hotels, Locations) from S3 and loads into TEN_DATAWAREHOUSE dbo tables. Replaces the SSIS CMS package.',
     @category_name   = N'[Uncategorized (Local)]',
     @owner_login_name = N'tenmaid_admin',
     @job_id          = @jobId OUTPUT
@@ -102,9 +102,9 @@ EXEC @ReturnCode = msdb.dbo.sp_add_jobstep
      5. Clean up local files
 
    File patterns on S3:
-     CMS/*Dining.csv        → cms.Dining
-     CMS/*Hotels.csv        → cms.Hotels
-     CMS/*Travel_Location.csv → cms.Locations
+     CMS/*Dining.csv          → dbo.Dining
+     CMS/*Hotels.csv          → dbo.Hotels
+     CMS/*Travel_Location.csv → dbo.Locations
 ============================================================================ */
 SET NOCOUNT ON;
 SET XACT_ABORT ON;
@@ -115,13 +115,9 @@ DECLARE @status NVARCHAR(50);
 DECLARE @s3Arn NVARCHAR(500);
 DECLARE @localPath NVARCHAR(500);
 
--- ── 1. ENSURE SCHEMA ──
-IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = N''cms'')
-    EXEC(''CREATE SCHEMA cms AUTHORIZATION dbo'');
-
--- ── 2. ENSURE TABLES ──
-IF OBJECT_ID(N''cms.Dining'', N''U'') IS NULL
-    CREATE TABLE cms.Dining (
+-- ── 1. ENSURE TABLES ──
+IF OBJECT_ID(N''dbo.Dining'', N''U'') IS NULL
+    CREATE TABLE dbo.Dining (
         dining_id          INT,
         ivector_id         INT,
         ten_maid_vendor_id INT,
@@ -135,8 +131,8 @@ IF OBJECT_ID(N''cms.Dining'', N''U'') IS NULL
         FileName           VARCHAR(255)
     );
 
-IF OBJECT_ID(N''cms.Hotels'', N''U'') IS NULL
-    CREATE TABLE cms.Hotels (
+IF OBJECT_ID(N''dbo.Hotels'', N''U'') IS NULL
+    CREATE TABLE dbo.Hotels (
         accommodation_id    INT,
         ivector_id          INT,
         accommodation_name  NVARCHAR(255),
@@ -150,8 +146,8 @@ IF OBJECT_ID(N''cms.Hotels'', N''U'') IS NULL
         FileName            VARCHAR(255)
     );
 
-IF OBJECT_ID(N''cms.Locations'', N''U'') IS NULL
-    CREATE TABLE cms.Locations (
+IF OBJECT_ID(N''dbo.Locations'', N''U'') IS NULL
+    CREATE TABLE dbo.Locations (
         location_id    INT,
         geo_level      NVARCHAR(50),
         langcode       NVARCHAR(5),
@@ -182,9 +178,9 @@ CREATE TABLE #CmsFiles (
 -- mechanism or a fixed naming convention.
 -- ═══════════════════════════════════════════════════════════════════════
 INSERT INTO #CmsFiles (S3Arn, LocalPath, TableName) VALUES
-    (N''arn:aws:s3:::bi-prod.tenproduct.com/CMS/Dining.csv'',          N''D:\S3\CMS\Dining.csv'',          N''cms.Dining''),
-    (N''arn:aws:s3:::bi-prod.tenproduct.com/CMS/Hotels.csv'',          N''D:\S3\CMS\Hotels.csv'',          N''cms.Hotels''),
-    (N''arn:aws:s3:::bi-prod.tenproduct.com/CMS/Travel_Location.csv'', N''D:\S3\CMS\Travel_Location.csv'', N''cms.Locations'');
+    (N''arn:aws:s3:::bi-staging.tenproduct.com/CMS/Dining.csv'',          N''D:\S3\CMS\Dining.csv'',          N''dbo.Dining''),
+    (N''arn:aws:s3:::bi-staging.tenproduct.com/CMS/Hotels.csv'',          N''D:\S3\CMS\Hotels.csv'',          N''dbo.Hotels''),
+    (N''arn:aws:s3:::bi-staging.tenproduct.com/CMS/Travel_Location.csv'', N''D:\S3\CMS\Travel_Location.csv'', N''dbo.Locations'');
 
 -- ── 3. DOWNLOAD EACH FILE FROM S3 ──
 DECLARE @fileId INT = 1;
@@ -227,7 +223,7 @@ END
 -- ── 4. TRUNCATE & BULK INSERT ──
 
 -- ── Dining ──
-TRUNCATE TABLE cms.Dining;
+TRUNCATE TABLE dbo.Dining;
 
 -- Stage into temp table (all VARCHAR) then INSERT with type conversion + audit cols
 CREATE TABLE #Dining_Raw (
@@ -251,7 +247,7 @@ WITH (
     TABLOCK
 );
 
-INSERT INTO cms.Dining (dining_id, ivector_id, ten_maid_vendor_id, dining_name,
+INSERT INTO dbo.Dining (dining_id, ivector_id, ten_maid_vendor_id, dining_name,
                         location_id, latitude, longitude, held_table,
                         Inserted_On, ProcessId, FileName)
 SELECT
@@ -271,7 +267,7 @@ FROM #Dining_Raw;
 DROP TABLE #Dining_Raw;
 
 -- ── Hotels ──
-TRUNCATE TABLE cms.Hotels;
+TRUNCATE TABLE dbo.Hotels;
 
 CREATE TABLE #Hotels_Raw (
     accommodation_id   VARCHAR(50),
@@ -294,7 +290,7 @@ WITH (
     TABLOCK
 );
 
-INSERT INTO cms.Hotels (accommodation_id, ivector_id, accommodation_name, rating,
+INSERT INTO dbo.Hotels (accommodation_id, ivector_id, accommodation_name, rating,
                         latitude, longitude, location_id, is_benefits_hotel,
                         Inserted_On, ProcessId, FileName)
 SELECT
@@ -314,7 +310,7 @@ FROM #Hotels_Raw;
 DROP TABLE #Hotels_Raw;
 
 -- ── Locations ──
-TRUNCATE TABLE cms.Locations;
+TRUNCATE TABLE dbo.Locations;
 
 CREATE TABLE #Locations_Raw (
     location_id   VARCHAR(50),
@@ -336,7 +332,7 @@ WITH (
     KEEPNULLS
 );
 
-INSERT INTO cms.Locations (location_id, geo_level, langcode, location_name,
+INSERT INTO dbo.Locations (location_id, geo_level, langcode, location_name,
                            latitude, longitude,
                            Inserted_On, ProcessId, FileName)
 SELECT
@@ -360,7 +356,7 @@ EXEC msdb.dbo.rds_delete_from_filesystem @rds_file_path = N''D:\S3\CMS\Travel_Lo
 
 PRINT ''CMS_S3_Import completed — ProcessId: '' + @ProcessId;
 ',
-    @database_name   = N'TenDataWarehouse',
+    @database_name   = N'TEN_DATAWAREHOUSE',
     @flags           = 0
 IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
 
