@@ -1,0 +1,1115 @@
+<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="2/28/2020 4:46:48 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="LDCSQLPD21"
+  DTS:CreatorName="TENUK\marcingminski"
+  DTS:DTSID="{85EB66A3-8456-40DC-837E-768DC2C5152B}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="16.0.5467.0"
+  DTS:LocaleID="2057"
+  DTS:ObjectName="Control_MemberProfile"
+  DTS:PackageType="5"
+  DTS:ProtectionLevel="1"
+  DTS:VersionBuild="160"
+  DTS:VersionGUID="{355F4B2F-B5D0-4930-BE8B-7F6861BDC5C6}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:PackageParameters>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="8"
+      DTS:DTSID="{79D01557-9BED-4BB6-9974-E10D883F2307}"
+      DTS:ObjectName="aws2Path">
+      <DTS:Property
+        DTS:DataType="8"
+        DTS:Name="ParameterValue">C:\TenDataWarehouseDependencies\AWSCLI\AWSCLIV2\aws.exe</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="8"
+      DTS:DTSID="{2C276BB5-C411-45FD-82E9-8827934C50C6}"
+      DTS:ObjectName="ProjectKey"
+      DTS:Required="True">
+      <DTS:Property
+        DTS:DataType="8"
+        DTS:Name="ParameterValue">BE_DJANGO_POSTGRES_CSV</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="8"
+      DTS:DTSID="{CB600F9E-3693-41CD-9233-1D36DD282832}"
+      DTS:ObjectName="S3BucketAddress">
+      <DTS:Property
+        DTS:DataType="8"
+        DTS:Name="ParameterValue">s3://bi-prod.tenproduct.com</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="8"
+      DTS:DTSID="{024F0B5F-557B-4A08-B9AE-557DECF12EAC}"
+      DTS:ObjectName="S3BucketAddressArchive">
+      <DTS:Property
+        DTS:DataType="8"
+        DTS:Name="ParameterValue">s3://bi-prod.tenproduct.com</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="8"
+      DTS:DTSID="{E1370CEA-5D8C-4E36-9C2B-E5F92EDE1D17}"
+      DTS:ObjectName="S3DownloadFolder">
+      <DTS:Property
+        DTS:DataType="8"
+        DTS:Name="ParameterValue">D:\TenDataWarehouseDependencies</DTS:Property>
+    </DTS:PackageParameter>
+  </DTS:PackageParameters>
+  <DTS:Variables>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{0C14AC83-6D0C-4B2F-929C-CF180CF5EA8A}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="&quot;s3 mv &quot; +  @[$Package::S3BucketAddress] + &quot;/&quot; + @[$Package::ProjectKey] +  &quot; \&quot;&quot; + @[$Package::S3BucketAddressArchive] + &quot;/&quot; + @[$Package::ProjectKey]  + &quot;/Archive&quot;  + &quot;\&quot; --recursive --exclude \&quot;Archive/*\&quot;&quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="aws2cliCommandArchive">
+      <DTS:VariableValue
+        DTS:DataType="8">s3 mv s3://bi-prod.tenproduct.com/BE_DJANGO_POSTGRES_CSV "s3://bi-prod.tenproduct.com/BE_DJANGO_POSTGRES_CSV/Archive" --recursive --exclude "Archive/*"</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{451CEDB4-8F92-4983-81C7-1F5A3C58E31E}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="&quot;s3 cp &quot; +  @[$Package::S3BucketAddress] + &quot; \&quot;&quot; + @[$Package::S3DownloadFolder]  + &quot;\&quot; --exclude \&quot;Archive/*\&quot; --recursive&quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="aws2cliCommandCopy">
+      <DTS:VariableValue
+        DTS:DataType="8">s3 cp s3://bi-prod.tenproduct.com "D:\TenDataWarehouseDependencies" --exclude "Archive/*" --recursive</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{942C370A-C067-4FC3-8638-B5CA4D968803}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="SQL_CREATE_SCHEMA">
+      <DTS:VariableValue
+        DTS:DataType="8">IF NOT EXISTS ( SELECT * FROM sys.schemas WHERE name = N'django' ) 	BEGIN 		EXEC('CREATE SCHEMA [django] AUTHORIZATION [dbo]'); 	END</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{0EBCCFCE-41D1-47B8-8465-CA8A94FCF573}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="SQL_CREATE_TABLES">
+      <DTS:VariableValue
+        DTS:DataType="8">/****** Object:  Table [django].[articles]    Script Date: 16/02/2020 18:33:02 ******/ SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[articles]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[articles]          (             [id]          [INT] NOT NULL,             [title]       [NVARCHAR](4000) NULL,             [slug]        [NVARCHAR](4000) NULL,             [tags]        [NVARCHAR](4000) NULL,             [created]     [DATETIME2](0) NULL,             [inserted_on] [DATETIME] NOT NULL,             [processid]   [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[brands]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[brands]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[brands]          (             [id]          [INT] NOT NULL,             [name]        [NVARCHAR](4000) NULL,             [vendor_id]   [INT] NULL,             [inserted_on] [DATETIME] NOT NULL,             [processid]   [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[dining_celebrity_chefs]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[dining_celebrity_chefs]'                                    )                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[dining_celebrity_chefs]          (             [id]          [INT] NOT NULL,             [name]        [NVARCHAR](4000) NULL,             [inserted_on] [DATETIME] NOT NULL,             [processid]   [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[dining_cuisine]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[dining_cuisine]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[dining_cuisine]          (             [id]          [INT] NOT NULL,             [name]        [NVARCHAR](4000) NULL,             [inserted_on] [DATETIME] NOT NULL,             [processid]   [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[dining_hot_table_bookings]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id =                        Object_id(N'[django].[dining_hot_table_bookings]'                        )                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[dining_hot_table_bookings]          (             [id]           [INT] NOT NULL,             [member_id]    [INT] NULL,             [author_id]    [INT] NULL,             [hot_table_id] [INT] NULL,             [status]       [NVARCHAR](4000) NULL,             [created]      [DATETIME2](0) NULL,             [inserted_on]  [DATETIME] NOT NULL,             [processid]    [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[dining_hot_tables]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[dining_hot_tables]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[dining_hot_tables]          (             [id]                    [INT] NOT NULL,             [name]                  [NVARCHAR](4000) NULL,             [id2]                   [NVARCHAR](4000) NULL,             [number_of_seats]       [INT] NULL,             [available_at_datetime] [DATETIME] NULL,             [inserted_on]           [DATETIME] NOT NULL,             [processid]             [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[dining_restaurant_benefits]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id =                        Object_id(N'[django].[dining_restaurant_benefits]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[dining_restaurant_benefits]          (             [id]            [INT] NOT NULL,             [name]          [NVARCHAR](4000) NULL,             [benefit_code]  [NVARCHAR](4000) NULL,             [restaurant_id] [INT] NULL,             [inserted_on]   [DATETIME] NOT NULL,             [processid]     [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[dining_restaurants]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[dining_restaurants]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[dining_restaurants]          (             [id]              [INT] NOT NULL,             [name]            [NVARCHAR](4000) NULL,             [latitude]        [NVARCHAR](4000) NULL,             [longitude]       [NVARCHAR](4000) NULL,             [city]            [NVARCHAR](4000) NULL,             [postcode]        [NVARCHAR](4000) NULL,             [country]         [NVARCHAR](4000) NULL,             [cuisine]         [NVARCHAR](4000) NULL,             [location_id]     [NVARCHAR](64) NULL,             [price_indicator] [NVARCHAR](4000) NULL,             [rating]          [NVARCHAR](4000) NULL,             [website]         [NVARCHAR](4000) NULL,             [vendor_id]       [INT] NULL,             [tags]            [NVARCHAR](4000) NULL,             [inserted_on]     [DATETIME] NOT NULL,             [processid]       [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[email_templates]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[email_templates]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[email_templates]          (             [name]        [NVARCHAR](4000) NOT NULL,             [campaign_id] [INT] NOT NULL,             [name1]       [NVARCHAR](4000) NOT NULL,             [sites]       [NVARCHAR](4000) NULL,             [subject]     [NVARCHAR](4000) NOT NULL ,            [inserted_on] [DATETIME] NOT NULL,             [processid]   [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[entertainment_artists]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[entertainment_artists]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[entertainment_artists]          (             [id]            [INT] NOT NULL,             [name]          [NVARCHAR](4000) NULL,             [see_artist_id] [NVARCHAR](64) NULL,             [created_at]    [DATETIME2](0) NULL,             [inserted_on]   [DATETIME] NOT NULL,             [processid]     [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[entertainment_bookings]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[entertainment_bookings]'                                    )                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[entertainment_bookings]          (             [id]                 [INT] NOT NULL,             [member_id]          [INT] NULL,             [author_id]          [INT] NULL,             [name]               [NVARCHAR](4000) NULL,             [status]             [NVARCHAR](4000) NULL,             [delivery_method_id] [INT] NULL,             [performance_id]     [INT] NULL,             [payment_status]     [NVARCHAR](4000) NULL,             [external_id]        [INT] NULL,             [provider]           [NVARCHAR](4000) NULL,             [created]            [DATETIME2](0) NULL,             [inserted_on]        [DATETIME] NOT NULL,             [processid]          [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[entertainment_delivery_methods]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id =                        Object_id(N'[django].[entertainment_delivery_methods]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[entertainment_delivery_methods]          (             [id]             [INT] NOT NULL,             [name]           [NVARCHAR](4000) NULL,             [price_currency] [NVARCHAR](4000) NULL,             [provider]       [NVARCHAR](4000) NULL,             [inserted_on]    [DATETIME] NOT NULL,             [processid]      [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[entertainment_events]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[entertainment_events]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[entertainment_events]          (             [id]                     [INT] NOT NULL,             [name]                   [NVARCHAR](4000) NULL,             [category]               [NVARCHAR](4000) NULL,             [number_of_performances] [NVARCHAR](4000) NULL,             [popularity]             [NVARCHAR](4000) NULL,             [currency]               [NVARCHAR](4000) NULL,             [active]                 [NVARCHAR](4000) NULL,             [created]                [DATETIME2](0) NULL,             [chosen_tags]            [NVARCHAR](4000) NULL,             [inserted_on]            [DATETIME] NOT NULL,             [processid]              [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[entertainment_performances]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id =                        Object_id(N'[django].[entertainment_performances]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[entertainment_performances]          (             [id]                    [INT] NOT NULL,             [event_id]              [INT] NULL,             [venue_id]              [INT] NULL,             [start_local_date_time] [NVARCHAR](4000) NULL,             [ten_direct_vendor_id]  [INT] NULL,             [inserted_on]           [DATETIME] NOT NULL,             [processid]             [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[entertainment_ticket_types]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id =                        Object_id(N'[django].[entertainment_ticket_types]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[entertainment_ticket_types]          (             [id]                  [INT] NOT NULL,             [performance_id]      [INT] NULL,             [see_offer_id]        [NVARCHAR](40) NULL,             [see_price_id]        [NVARCHAR](40) NULL,             [price]               [DECIMAL](20, 3) NULL,             [price_currency]      [NVARCHAR](4000) NULL,             [face_price]          [DECIMAL](20, 3) NULL,             [face_price_currency] [NVARCHAR](4000) NULL,             [inserted_on]         [DATETIME] NOT NULL,             [processid]           [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[entertainment_venues]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[entertainment_venues]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[entertainment_venues]          (             [id]           [INT] NOT NULL,             [name]         [NVARCHAR](4000) NULL,             [longitude]    [DECIMAL](9, 6) NULL,             [latitude]     [DECIMAL](9, 6) NULL,             [country]      [NVARCHAR](4000) NULL,             [postcode]     [NVARCHAR](4000) NULL,             [location_id]  [NVARCHAR](36) NULL,             [see_venue_id] [INT] NULL,             [inserted_on]  [DATETIME] NOT NULL,             [processid]    [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[load_stat]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[load_stat]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[load_stat]          (             [process_id]         [UNIQUEIDENTIFIER] NULL,             [process_start_time] [DATETIME] NULL,             [process_end_time]   [DATETIME] NULL,             [process_status]     [VARCHAR](100) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[location_cities]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[location_cities]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[location_cities]          (             [id]                           [NVARCHAR](36) NOT NULL,             [name]                         [NVARCHAR](4000) NULL,             [geoname_id]                   [NVARCHAR](max) NULL,             [ivector_connect_geo_level_id] [INT] NULL,             [ivector_connect_id]           [INT] NULL,             [ivector_connect_unique_code]  [NVARCHAR](4000) NULL,             [administrative_subdivision]   [NVARCHAR](4000) NULL,             [country]                      [NVARCHAR](4000) NULL,             [inserted_on]                  [DATETIME] NOT NULL,             [processid]                    [VARCHAR](36) NULL          )        ON [PRIMARY]        textimage_on [PRIMARY]    END; /****** Object:  Table [django].[location_countries]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[location_countries]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[location_countries]          (             [id]                           [NVARCHAR](50) NOT NULL,             [name]                         [NVARCHAR](4000) NULL,             [geoname_id]                   [NVARCHAR](4000) NULL,             [ivector_connect_geo_level_id] [NVARCHAR](4000) NULL,             [ivector_connect_id]           [NVARCHAR](4000) NULL,             [ivector_connect_unique_code]  [NVARCHAR](4000) NULL,             [alpha3_code]                  [NVARCHAR](4000) NULL,             [iso_code]                     [NVARCHAR](4000) NULL,             [inserted_on]                  [DATETIME] NOT NULL,             [processid]                    [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[location_locationtags]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[location_locationtags]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[location_locationtags]          (             [id]                           [NVARCHAR](50) NOT NULL,             [name]                         [NVARCHAR](4000) NULL,             [geoname_id]                   [INT] NULL,             [ivector_connect_geo_level_id] [INT] NULL,             [ivector_connect_id]           [INT] NULL,             [ivector_connect_unique_code]  [NVARCHAR](4000) NULL,             [inserted_on]                  [DATETIME] NOT NULL,             [processid]                    [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[member_benefits]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[member_benefits]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[member_benefits]          (             [id]                          [INT] NOT NULL,             [name]                        [NVARCHAR](4000) NULL,             [available_from]              [DATETIMEOFFSET](7) NULL,             [available_until]             [DATETIMEOFFSET](7) NULL,             [brand_id]                    [INT] NULL,             [location_id]                 [NVARCHAR](50) NULL,             [status]                      [NVARCHAR](4000) NULL,             [url_redemption]              [NVARCHAR](4000) NULL,             [online_redemption_code]      [NVARCHAR](4000) NULL,             [in_store_redemption]         [NVARCHAR](4000) NULL,             [has_redemption_phone_number] [NVARCHAR](4000) NULL,             [phone_number]                [NVARCHAR](4000) NULL,             [chosen_tags]                 [NVARCHAR](max) NULL,             [sites]                       [NVARCHAR](max) NULL,             [inserted_on]                 [DATETIME] NOT NULL,             [processid]                   [VARCHAR](36) NULL          )        ON [PRIMARY]        textimage_on [PRIMARY]    END; /****** Object:  Table [django].[member_details]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[member_details]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[member_details]          (             [id]                [INT] NOT NULL,             [member_profile_id] [INT] NULL,             [tag]               [NVARCHAR](4000) NULL,             [tag_id]            [INT] NULL,             [inserted_on]       [DATETIME] NOT NULL,             [processid]         [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[member_events]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[member_events]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[member_events]          (             [id]                          [INT] NOT NULL,             [name]                        [NVARCHAR](4000) NULL,             [latitude]                    [DECIMAL](9, 6) NULL,             [longitude]                   [DECIMAL](9, 6) NULL,             [city]                        [NVARCHAR](4000) NULL,             [country]                     [NVARCHAR](4000) NULL,             [postcode]                    [NVARCHAR](4000) NULL,             [type]                        [NVARCHAR](4000) NULL,             [adult_ticket_price]          [MONEY] NULL,             [adult_ticket_price_currency] [NVARCHAR](4000) NULL,             [child_ticket_price]          [MONEY] NULL,             [child_ticket_price_currency] [NVARCHAR](4000) NULL,             [chosen_tags]                 [NVARCHAR](4000) NULL,             [sites]                       [NVARCHAR](4000) NULL,             [supplier]                    [NVARCHAR](4000) NULL,             [vendor_id]                   [INT] NULL,             [inserted_on]                 [DATETIME] NOT NULL,             [processid]                   [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[member_events_bookings]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[member_events_bookings]'                                    )                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[member_events_bookings]          (             [id]               [INT] NOT NULL,             [event_id]         [INT] NULL,             [member_id]        [INT] NULL,             [event_date]       [DATETIME2](0) NULL,             [booked_timestamp] [DATETIME2](0) NULL,             [booking_status]   [NVARCHAR](4000) NULL,             [inserted_on]      [DATETIME] NOT NULL,             [processid]        [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[member_events_dates]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[member_events_dates]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[member_events_dates]          (             [id]             [INT] NOT NULL,             [event_id]       [INT] NULL,             [local_datetime] [NVARCHAR](4000) NULL,             [inserted_on]    [DATETIME] NOT NULL,             [processid]      [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[member_profiles]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[member_profiles]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[member_profiles]          (             [user_id]                                 [INT] NULL,             [created]                                 [DATETIME2](0) NULL,             [member_id]                               [INT] NULL,             [ten_maid_corporate_scheme_id]            [INT] NULL,             [title]                                   [NVARCHAR](4000) NULL,             [email]                                   [NVARCHAR](4000) NULL,             [birth_date]                              [DATE] NULL,             [gender]                                  [NVARCHAR](4000) NULL,             [country_of_citizenship]                  [NVARCHAR](4000) NULL,             [preferred_contact_method]                [NVARCHAR](4000) NULL,             [client_opt_in]                           [NVARCHAR](4000) NULL,             [ten_opt_in]                              [NVARCHAR](4000) NULL,             [terms_and_conditions_accepted_timestamp] [DATETIMEOFFSET](7) NULL,             [ten_maid_in_sync]                        [NVARCHAR](4000) NULL,             [password_email_sent_datetime]            [DATETIMEOFFSET](7) NULL,             [enable_calendar_invites]                 [NVARCHAR](4000) NULL,             [enable_booking_reminders]                [NVARCHAR](4000) NULL,             [login_from_new_device_emails]            [NVARCHAR](4000) NULL,             [two_step_login]                          [NVARCHAR](4000) NULL,             [weekly_newsletter]                       [NVARCHAR](4000) NULL,             [member_events_invite]                    [NVARCHAR](4000) NULL,             [dining_interest]                         [NVARCHAR](4000) NULL,             [music_tickets]                           [NVARCHAR](4000) NULL,             [theatre_interest]                        [NVARCHAR](4000) NULL,             [art_exhibitions]                         [NVARCHAR](4000) NULL,             [events_for_children]                     [NVARCHAR](4000) NULL,             [other_attractions]                       [NVARCHAR](4000) NULL,             [accessory_events_clothing]               [NVARCHAR](4000) NULL,             [travel_inspiration]                      [NVARCHAR](4000) NULL,             [hotel_openings]                          [NVARCHAR](4000) NULL,             [flight_sales]                            [NVARCHAR](4000) NULL,             [viewed_tour]                             [NVARCHAR](4000) NULL,             [account_activated]                       [NVARCHAR](4000) NULL,             [password_hash]                           [NVARCHAR](4000) NULL,             [inserted_on]                             [DATETIME] NOT NULL,             [processid]                               [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[partners]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[partners]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[partners]          (             [id]          [INT] NOT NULL,             [name]        [NVARCHAR](4000) NULL,             [link]        [NVARCHAR](4000) NULL,             [chosen_tags] [NVARCHAR](4000) NULL,             [sites]       [NVARCHAR](4000) NULL,             [inserted_on] [DATETIME] NOT NULL,             [processid]   [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[sites]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[sites]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[sites]          (             [site_id]     [INT] NULL,             [site_name]   [NVARCHAR](4000) NULL,             [inserted_on] [DATETIME] NOT NULL,             [processid]   [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[tags]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[tags]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[tags]          (             [id]                     [INT] NOT NULL,             [name]                   [NVARCHAR](4000) NULL,             [tag_group]              [NVARCHAR](4000) NULL,             [articles_module]        [NVARCHAR](4000) NULL,             [travel_module]          [NVARCHAR](4000) NULL,             [dining_module]          [NVARCHAR](4000) NULL,             [entertainment_module]   [NVARCHAR](4000) NULL,             [member_benefits_module] [NVARCHAR](4000) NULL,             [member_events_module]   [NVARCHAR](4000) NULL,             [inserted_on]            [DATETIME] NOT NULL,             [processid]              [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[travel_airport_groups]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[travel_airport_groups]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[travel_airport_groups]          (             [id]                 [INT] NOT NULL,             [name]               [NVARCHAR](4000) NULL,             [ivector_connect_id] [INT] NULL,             [airports]           [NVARCHAR](4000) NULL,             [inserted_on]        [DATETIME] NOT NULL,             [processid]          [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[travel_airports]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[travel_airports]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[travel_airports]          (             [id]                 [INT] NOT NULL,             [name]               [NVARCHAR](4000) NULL,             [ivector_connect_id] [NVARCHAR](4000) NULL,             [iata_code]          [NVARCHAR](4000) NULL,             [location_id]        [NVARCHAR](50) NULL,             [latitude]           [DECIMAL](9, 6) NULL,             [longitude]          [DECIMAL](9, 6) NULL,             [inserted_on]        [DATETIME] NOT NULL,             [processid]          [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[travel_car_hire_depots]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[travel_car_hire_depots]'                                    )                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[travel_car_hire_depots]          (             [id]                 [INT] NOT NULL,             [latitude]           [DECIMAL](9, 6) NULL,             [longitude]          [DECIMAL](9, 6) NULL,             [ivector_connect_id] [NVARCHAR](4000) NULL,             [name]               [NVARCHAR](4000) NULL,             [vendor_id]          [INT] NULL,             [location_id]        [NVARCHAR](50) NULL,             [created]            [DATETIMEOFFSET](7) NULL,             [deleted]            [DATETIMEOFFSET](7) NULL,             [inserted_on]        [DATETIME] NOT NULL,             [processid]          [VARCHAR](36) NULL          )        ON [PRIMARY]    END; /****** Object:  Table [django].[travel_hotels]    Script Date: 16/02/2020 18:33:02 ******/   SET ansi_nulls ON;  SET quoted_identifier ON;   IF NOT EXISTS (SELECT *                 FROM   sys.objects                 WHERE  object_id = Object_id(N'[django].[travel_hotels]')                        AND type IN ( N'U' ))    BEGIN        CREATE TABLE [django].[travel_hotels]          (             [id]                  [INT] NOT NULL,             [name]                [NVARCHAR](4000) NULL,             [ivector_connect_id]  [NVARCHAR](4000) NULL,             [latitude]            [DECIMAL](9, 6) NULL,             [longitude]           [DECIMAL](9, 6) NULL,             [star_rating]         [NVARCHAR](4000) NULL,             [location_id]         [NVARCHAR](4000) NULL,             [city]                [NVARCHAR](4000) NULL,             [country]             [NVARCHAR](4000) NULL,             [expedia_id]          [INT] NULL,             [benefit_collections] [NVARCHAR](4000) NULL,             [inserted_on]         [DATETIME] NOT NULL,             [processid]           [VARCHAR](36) NULL          )        ON [PRIMARY]    END;</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{AA254901-A3A7-4D0F-95D5-EE1326FD2769}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="SQL_TRUNCATE_TABLES">
+      <DTS:VariableValue
+        DTS:DataType="8">TRUNCATE TABLE django.articles; TRUNCATE TABLE django.brands; TRUNCATE TABLE django.dining_celebrity_chefs; TRUNCATE TABLE django.dining_cuisine; TRUNCATE TABLE django.dining_hot_table_bookings; TRUNCATE TABLE django.dining_restaurant_benefits; TRUNCATE TABLE django.dining_restaurants; TRUNCATE TABLE django.entertainment_artists; TRUNCATE TABLE django.entertainment_bookings; TRUNCATE TABLE django.entertainment_delivery_methods; TRUNCATE TABLE django.entertainment_events; TRUNCATE TABLE django.entertainment_performances; TRUNCATE TABLE django.entertainment_ticket_types; TRUNCATE TABLE django.entertainment_venues; TRUNCATE TABLE django.location_cities; TRUNCATE TABLE django.location_countries; TRUNCATE TABLE django.location_locationtags; TRUNCATE TABLE django.member_details; TRUNCATE TABLE django.member_events; TRUNCATE TABLE django.member_events_bookings; TRUNCATE TABLE django.member_events_dates; TRUNCATE TABLE django.member_profiles; TRUNCATE TABLE django.partners; TRUNCATE TABLE django.sites; TRUNCATE TABLE django.tags; TRUNCATE TABLE django.travel_airport_groups; TRUNCATE TABLE django.travel_airports; TRUNCATE TABLE django.travel_car_hire_depots; TRUNCATE TABLE django.travel_hotels; TRUNCATE TABLE django.member_benefits; TRUNCATE TABLE django.dining_hot_tables; TRUNCATE TABLE django.email_templates;</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{35D05448-41EF-4112-A186-A6619762F041}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Package::S3DownloadFolder] +&quot;\\&quot;+ @[$Package::ProjectKey]+&quot;\\ToBeProcessed&quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="ToBeProcessedPath">
+      <DTS:VariableValue
+        DTS:DataType="8">D:\TenDataWarehouseDependencies\BE_DJANGO_POSTGRES_CSV\ToBeProcessed</DTS:VariableValue>
+    </DTS:Variable>
+  </DTS:Variables>
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Archive files to s3"
+      DTS:CreationName="Microsoft.ExecuteProcess"
+      DTS:Description="Execute Process Task"
+      DTS:DTSID="{588EB5E8-F31F-4791-B39C-272E174F5AE9}"
+      DTS:ExecutableType="Microsoft.ExecuteProcess"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Archive files to s3"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:PropertyExpression
+        DTS:Name="Arguments">"-f C:\\TenDataWarehouseDependencies\\AWSCLIArchiveFilesInBucket.ps1 -S3Bucket \"" +  @[$Package::S3BucketAddress] +  "\" -RootFolderPath \"" +  @[$Package::S3DownloadFolder]  + "\" -ProductKey \"" +  @[$Package::ProjectKey] + "\""</DTS:PropertyExpression>
+      <DTS:EventHandlers>
+        <DTS:EventHandler
+          DTS:refId="Package\Archive files to s3.EventHandlers[OnPreExecute]"
+          DTS:CreationName="OnPreExecute"
+          DTS:DTSID="{2F468CCC-D016-403B-A0BE-28C104322917}"
+          DTS:EventID="-1"
+          DTS:EventName="OnPreExecute"
+          DTS:LocaleID="-1">
+          <DTS:Variables>
+            <DTS:Variable
+              DTS:CreationName=""
+              DTS:Description="The propagate property of the event"
+              DTS:DTSID="{DCEDDF36-81CA-4C3B-875A-1A4E4729F44D}"
+              DTS:IncludeInDebugDump="6789"
+              DTS:Namespace="System"
+              DTS:ObjectName="Propagate">
+              <DTS:VariableValue
+                DTS:DataType="11">-1</DTS:VariableValue>
+            </DTS:Variable>
+          </DTS:Variables>
+          <DTS:Executables>
+            <DTS:Executable
+              DTS:refId="Package\Archive files to s3.EventHandlers[OnPreExecute]\File System Task"
+              DTS:CreationName="Microsoft.FileSystemTask"
+              DTS:Description="File System Task"
+              DTS:DTSID="{3B9DFA8E-CD97-487E-97F5-6CBA04BBF6D7}"
+              DTS:ExecutableType="Microsoft.FileSystemTask"
+              DTS:FailParentOnFailure="True"
+              DTS:LocaleID="-1"
+              DTS:ObjectName="File System Task">
+              <DTS:Variables />
+              <DTS:ObjectData>
+                <FileSystemData
+                  TaskOperationType="DeleteDirectoryContent"
+                  TaskSourcePath="User::ToBeProcessedPath"
+                  TaskIsSourceVariable="True" />
+              </DTS:ObjectData>
+            </DTS:Executable>
+          </DTS:Executables>
+        </DTS:EventHandler>
+      </DTS:EventHandlers>
+      <DTS:ObjectData>
+        <ExecuteProcessData
+          Executable="powershell.exe"
+          Arguments="-f C:\TenDataWarehouseDependencies\AWSCLIArchiveFilesInBucket.ps1 -S3Bucket &quot;s3://bi-prod.tenproduct.com&quot; -RootFolderPath &quot;D:\TenDataWarehouseDependencies&quot; -ProductKey &quot;BE_DJANGO_POSTGRES_CSV&quot;" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Get Files from S3"
+      DTS:CreationName="Microsoft.ExecuteProcess"
+      DTS:Description="Execute Process Task"
+      DTS:DTSID="{B128F4F3-F99F-4A11-9C6F-6128CE268DB8}"
+      DTS:ExecutableType="Microsoft.ExecuteProcess"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Get Files from S3"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:PropertyExpression
+        DTS:Name="Arguments">"-f C:\\TenDataWarehouseDependencies\\AWSCLIcallWithFolderMove.ps1 -S3Bucket \"" +  @[$Package::S3BucketAddress] +  "\" -RootFolderPath \"" +  @[$Package::S3DownloadFolder]  + "\" -ProductKey \"" +  @[$Package::ProjectKey] + "\" -LatestFolderOnly "</DTS:PropertyExpression>
+      <DTS:EventHandlers>
+        <DTS:EventHandler
+          DTS:refId="Package\Get Files from S3.EventHandlers[OnPreExecute]"
+          DTS:CreationName="OnPreExecute"
+          DTS:DTSID="{3590F633-28C2-4DD9-9D26-6A61175ABA42}"
+          DTS:EventID="-1"
+          DTS:EventName="OnPreExecute"
+          DTS:LocaleID="-1">
+          <DTS:Variables>
+            <DTS:Variable
+              DTS:CreationName=""
+              DTS:Description="The propagate property of the event"
+              DTS:DTSID="{60D7CE43-9C0D-43E9-B8A7-9FFB78F124A2}"
+              DTS:IncludeInDebugDump="6789"
+              DTS:Namespace="System"
+              DTS:ObjectName="Propagate">
+              <DTS:VariableValue
+                DTS:DataType="11">-1</DTS:VariableValue>
+            </DTS:Variable>
+          </DTS:Variables>
+          <DTS:Executables>
+            <DTS:Executable
+              DTS:refId="Package\Get Files from S3.EventHandlers[OnPreExecute]\File System Task"
+              DTS:CreationName="Microsoft.FileSystemTask"
+              DTS:Description="File System Task"
+              DTS:Disabled="True"
+              DTS:DTSID="{3857337F-04E2-4DF3-BB7E-8FCA48550EB5}"
+              DTS:ExecutableType="Microsoft.FileSystemTask"
+              DTS:FailParentOnFailure="True"
+              DTS:LocaleID="-1"
+              DTS:ObjectName="File System Task">
+              <DTS:Variables />
+              <DTS:ObjectData>
+                <FileSystemData
+                  TaskOperationType="DeleteDirectoryContent"
+                  TaskSourcePath="$Package::S3DownloadFolder"
+                  TaskIsSourceVariable="True" />
+              </DTS:ObjectData>
+            </DTS:Executable>
+          </DTS:Executables>
+        </DTS:EventHandler>
+      </DTS:EventHandlers>
+      <DTS:ObjectData>
+        <ExecuteProcessData
+          Executable="Powershell.exe"
+          Arguments="-f C:\TenDataWarehouseDependencies\AWSCLIcallWithFolderMove.ps1 -S3Bucket &quot;s3://bi-prod.tenproduct.com&quot; -RootFolderPath &quot;D:\TenDataWarehouseDependencies&quot; -ProductKey &quot;BE_DJANGO_POSTGRES_CSV&quot; -LatestFolderOnly " />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Load Data"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Sequence Container"
+      DTS:DTSID="{E1760750-F68B-4649-B25C-1EAC0C97F7DD}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Load Data">
+      <DTS:Variables />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Load Data\Parrallel Load"
+          DTS:CreationName="STOCK:SEQUENCE"
+          DTS:Description="Sequence Container"
+          DTS:DTSID="{46F07EA8-1ADE-4C0A-BC60-A9013295EAEA}"
+          DTS:ExecutableType="STOCK:SEQUENCE"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Parrallel Load">
+          <DTS:Variables />
+          <DTS:Executables>
+            <DTS:Executable
+              DTS:refId="Package\Load Data\Parrallel Load\member_profiles"
+              DTS:CreationName="Microsoft.ExecutePackageTask"
+              DTS:DelayValidation="True"
+              DTS:Description="Execute Package Task"
+              DTS:DTSID="{103CCA0E-9EF2-4C46-93A5-7ABEB85F44D7}"
+              DTS:ExecutableType="Microsoft.ExecutePackageTask"
+              DTS:LocaleID="-1"
+              DTS:ObjectName="member_profiles"
+              DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+              <DTS:Variables>
+                <DTS:Variable
+                  DTS:CreationName=""
+                  DTS:DTSID="{F4C928C3-9158-476C-B0A6-D6138D0523A0}"
+                  DTS:IncludeInDebugDump="2345"
+                  DTS:Namespace="User"
+                  DTS:ObjectName="PackageName">
+                  <DTS:VariableValue
+                    DTS:DataType="8">Load member_profiles.dtsx</DTS:VariableValue>
+                </DTS:Variable>
+              </DTS:Variables>
+              <DTS:PropertyExpression
+                DTS:Name="PackageName">@[User::PackageName]</DTS:PropertyExpression>
+              <DTS:EventHandlers>
+                <DTS:EventHandler
+                  DTS:refId="Package\Load Data\Parrallel Load\member_profiles.EventHandlers[OnPreExecute]"
+                  DTS:CreationName="OnPreExecute"
+                  DTS:DTSID="{413E1F81-7CAF-4AF6-A720-CEBA56152445}"
+                  DTS:EventID="-1"
+                  DTS:EventName="OnPreExecute"
+                  DTS:LocaleID="-1">
+                  <DTS:Variables>
+                    <DTS:Variable
+                      DTS:CreationName=""
+                      DTS:Description="The propagate property of the event"
+                      DTS:DTSID="{1BFDEDA4-E2AD-4715-86F5-98B1D5443A4D}"
+                      DTS:IncludeInDebugDump="6789"
+                      DTS:Namespace="System"
+                      DTS:ObjectName="Propagate">
+                      <DTS:VariableValue
+                        DTS:DataType="11">-1</DTS:VariableValue>
+                    </DTS:Variable>
+                  </DTS:Variables>
+                  <DTS:Executables />
+                </DTS:EventHandler>
+                <DTS:EventHandler
+                  DTS:refId="Package\Load Data\Parrallel Load\member_profiles.EventHandlers[OnPreValidate]"
+                  DTS:CreationName="OnPreValidate"
+                  DTS:DTSID="{CC277090-B32A-4613-9115-DCC44C6CEF6E}"
+                  DTS:EventID="0"
+                  DTS:EventName="OnPreValidate"
+                  DTS:LocaleID="-1">
+                  <DTS:Variables>
+                    <DTS:Variable
+                      DTS:CreationName=""
+                      DTS:Description="The propagate property of the event"
+                      DTS:DTSID="{0022500F-E19F-4E37-83C3-19EE0C63019A}"
+                      DTS:IncludeInDebugDump="6789"
+                      DTS:Namespace="System"
+                      DTS:ObjectName="Propagate">
+                      <DTS:VariableValue
+                        DTS:DataType="11">-1</DTS:VariableValue>
+                    </DTS:Variable>
+                  </DTS:Variables>
+                  <DTS:Executables>
+                    <DTS:Executable
+                      DTS:refId="Package\Load Data\Parrallel Load\member_profiles.EventHandlers[OnPreValidate]\Set Package Name"
+                      DTS:CreationName="Microsoft.ScriptTask"
+                      DTS:Description="Script Task"
+                      DTS:DTSID="{F78501CE-C999-452E-9081-B94BC78A3B69}"
+                      DTS:ExecutableType="Microsoft.ScriptTask"
+                      DTS:LocaleID="-1"
+                      DTS:ObjectName="Set Package Name">
+                      <DTS:Variables />
+                      <DTS:ObjectData>
+                        <ScriptProject
+                          Name="ST_571bf21866854c8999182e08d6bfd875"
+                          VSTAMajorVersion="16"
+                          VSTAMinorVersion="0"
+                          Language="CSharp"
+                          ReadOnlyVariables="System::SourceName"
+                          ReadWriteVariables="User::PackageName">
+                          <ProjectItem
+                            Name="Properties\Resources.resx"
+                            Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+</root>]]></ProjectItem>
+                          <ProjectItem
+                            Name="ST_571bf21866854c8999182e08d6bfd875.csproj"
+                            Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectTypeGuids>{30D016F9-3734-4E33-A861-5E7D899E18F3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{f068be9c-8558-4dc8-bf27-3e1c7d030f4f}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ST_212cf2a9d61843698493f8888a9e11df</RootNamespace>
+    <AssemblyName>ST_571bf21866854c8999182e08d6bfd875</AssemblyName>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ResolveAssemblyReferenceIgnoreTargetFrameworkAttributeVersionMismatch>true</ResolveAssemblyReferenceIgnoreTargetFrameworkAttributeVersionMismatch>
+    <TargetFrameworkProfile></TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>.\bin\Debug\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+    <OutputPath>.\bin\Release\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.SqlServer.ManagedDTS, Version=16.0.0.0, Culture=Neutral, PublicKeyToken=89845dcd8080cc91" />
+    <Reference Include="Microsoft.SqlServer.ScriptTask, Version=16.0.0.0, Culture=Neutral, PublicKeyToken=89845dcd8080cc91" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="ScriptMain.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <!-- Include the build rules for a C# project.-->
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
+        <ProjectProperties HostName="ScriptTask" HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}" ApplicationType="usd" Language="cs" TemplatesPath="" DebugInfoCommandLine="" DebugInfoWorkingDir="" IconImageList="" />
+        <Host Name="ScriptTask" GeneratedNamespace="$safeprojectname" IconIndex=""></Host>
+        <ProjectClient>
+          <HostIdentifier>SSIS_ST160</HostIdentifier>
+        </ProjectClient>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>]]></ProjectItem>
+                          <ProjectItem
+                            Name="Properties\Settings.Designer.cs"
+                            Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_212cf2a9d61843698493f8888a9e11df.Properties.Settings.get_Default():ST_212cf2a9d61843698493f8888a9e11df.Properties.Sett" +
+    "ings")]
+
+namespace ST_212cf2a9d61843698493f8888a9e11df.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+                          <ProjectItem
+                            Name="ScriptMain.cs"
+                            Encoding="UTF8"><![CDATA[#region Help:  Introduction to the script task
+/* The Script Task allows you to perform virtually any operation that can be accomplished in
+ * a .Net application within the context of an Integration Services control flow. 
+ * 
+ * Expand the other regions which have "Help" prefixes for examples of specific ways to use
+ * Integration Services features within this script task. */
+#endregion
+
+
+#region Namespaces
+using System;
+using System.Data;
+using Microsoft.SqlServer.Dts.Runtime;
+using System.Windows.Forms;
+#endregion
+
+namespace ST_212cf2a9d61843698493f8888a9e11df
+{
+    /// <summary>
+    /// ScriptMain is the entry point class of the script.  Do not change the name, attributes,
+    /// or parent of this class.
+    /// </summary>
+	[Microsoft.SqlServer.Dts.Tasks.ScriptTask.SSISScriptTaskEntryPointAttribute]
+	public partial class ScriptMain : Microsoft.SqlServer.Dts.Tasks.ScriptTask.VSTARTScriptObjectModelBase
+	{
+        #region Help:  Using Integration Services variables and parameters in a script
+        /* To use a variable in this script, first ensure that the variable has been added to 
+         * either the list contained in the ReadOnlyVariables property or the list contained in 
+         * the ReadWriteVariables property of this script task, according to whether or not your
+         * code needs to write to the variable.  To add the variable, save this script, close this instance of
+         * Visual Studio, and update the ReadOnlyVariables and 
+         * ReadWriteVariables properties in the Script Transformation Editor window.
+         * To use a parameter in this script, follow the same steps. Parameters are always read-only.
+         * 
+         * Example of reading from a variable:
+         *  DateTime startTime = (DateTime) Dts.Variables["System::StartTime"].Value;
+         * 
+         * Example of writing to a variable:
+         *  Dts.Variables["User::myStringVariable"].Value = "new value";
+         * 
+         * Example of reading from a package parameter:
+         *  int batchId = (int) Dts.Variables["$Package::batchId"].Value;
+         *  
+         * Example of reading from a project parameter:
+         *  int batchId = (int) Dts.Variables["$Project::batchId"].Value;
+         * 
+         * Example of reading from a sensitive project parameter:
+         *  int batchId = (int) Dts.Variables["$Project::batchId"].GetSensitiveValue();
+         * */
+
+        #endregion
+
+        #region Help:  Firing Integration Services events from a script
+        /* This script task can fire events for logging purposes.
+         * 
+         * Example of firing an error event:
+         *  Dts.Events.FireError(18, "Process Values", "Bad value", "", 0);
+         * 
+         * Example of firing an information event:
+         *  Dts.Events.FireInformation(3, "Process Values", "Processing has started", "", 0, ref fireAgain)
+         * 
+         * Example of firing a warning event:
+         *  Dts.Events.FireWarning(14, "Process Values", "No values received for input", "", 0);
+         * */
+        #endregion
+
+        #region Help:  Using Integration Services connection managers in a script
+        /* Some types of connection managers can be used in this script task.  See the topic 
+         * "Working with Connection Managers Programatically" for details.
+         * 
+         * Example of using an ADO.Net connection manager:
+         *  object rawConnection = Dts.Connections["Sales DB"].AcquireConnection(Dts.Transaction);
+         *  SqlConnection myADONETConnection = (SqlConnection)rawConnection;
+         *  //Use the connection in some code here, then release the connection
+         *  Dts.Connections["Sales DB"].ReleaseConnection(rawConnection);
+         *
+         * Example of using a File connection manager
+         *  object rawConnection = Dts.Connections["Prices.zip"].AcquireConnection(Dts.Transaction);
+         *  string filePath = (string)rawConnection;
+         *  //Use the connection in some code here, then release the connection
+         *  Dts.Connections["Prices.zip"].ReleaseConnection(rawConnection);
+         * */
+        #endregion
+
+
+		/// <summary>
+        /// This method is called when this script task executes in the control flow.
+        /// Before returning from this method, set the value of Dts.TaskResult to indicate success or failure.
+        /// To open Help, press F1.
+        /// </summary>
+		public void Main()
+		{
+            // TODO: Add your code here
+            Dts.Variables["User::PackageName"].Value = "Load " + Dts.Variables["System::SourceName"].Value.ToString() + ".dtsx";
+            Dts.TaskResult = (int)ScriptResults.Success;
+		}
+
+        #region ScriptResults declaration
+        /// <summary>
+        /// This enum provides a convenient shorthand within the scope of this class for setting the
+        /// result of the script.
+        /// 
+        /// This code was generated automatically.
+        /// </summary>
+        enum ScriptResults
+        {
+            Success = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Success,
+            Failure = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Failure
+        };
+        #endregion
+
+	}
+}]]></ProjectItem>
+                          <ProjectItem
+                            Name="Project"
+                            Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
+<c:Project xmlns:c="http://schemas.microsoft.com/codeprojectml/2010/08/main" xmlns:msb="http://schemas.microsoft.com/developer/msbuild/2003" runtimeVersion="4.0" schemaVersion="1.0">
+  <msb:PropertyGroup>
+    <msb:CodeName>ST_571bf21866854c8999182e08d6bfd875</msb:CodeName>
+    <msb:Language>msBuild</msb:Language>
+    <msb:DisplayName>ST_571bf21866854c8999182e08d6bfd875</msb:DisplayName>
+    <msb:ProjectId>{637B4A81-9DE3-414C-A702-4D846ACF583C}</msb:ProjectId>
+  </msb:PropertyGroup>
+  <msb:ItemGroup>
+    <msb:Project Include="ST_571bf21866854c8999182e08d6bfd875.csproj" />
+    <msb:File Include="Properties\Settings.settings" />
+    <msb:File Include="Properties\AssemblyInfo.cs" />
+    <msb:File Include="Properties\Resources.resx" />
+    <msb:File Include="Properties\Resources.Designer.cs" />
+    <msb:File Include="Properties\Settings.Designer.cs" />
+    <msb:File Include="ScriptMain.cs" />
+  </msb:ItemGroup>
+</c:Project>]]></ProjectItem>
+                          <ProjectItem
+                            Name="Properties\AssemblyInfo.cs"
+                            Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("ST_212cf2a9d61843698493f8888a9e11df")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("ST_212cf2a9d61843698493f8888a9e11df")]
+[assembly: AssemblyCopyright("Copyright @  2020")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                          <ProjectItem
+                            Name="Properties\Settings.settings"
+                            Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
+                          <ProjectItem
+                            Name="Properties\Resources.Designer.cs"
+                            Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_212cf2a9d61843698493f8888a9e11df.Properties.Resources.get_ResourceManager():System.Resources.Resou" +
+    "rceManager")]
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_212cf2a9d61843698493f8888a9e11df.Properties.Resources.get_Culture():System.Globalization.CultureIn" +
+    "fo")]
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_212cf2a9d61843698493f8888a9e11df.Properties.Resources.set_Culture(System.Globalization.CultureInfo" +
+    "):Void")]
+
+namespace ST_212cf2a9d61843698493f8888a9e11df.Properties {
+    
+    
+    /// <summary>
+    ///   A strongly-typed resource class, for looking up localized strings, etc.
+    /// </summary>
+    // This class was auto-generated by the StronglyTypedResourceBuilder
+    // class via a tool like ResGen or Visual Studio.
+    // To add or remove a member, edit your .ResX file then rerun ResGen
+    // with the /str option, or rebuild your VS project.
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+    internal class Resources {
+        
+        private static global::System.Resources.ResourceManager resourceMan;
+        
+        private static global::System.Globalization.CultureInfo resourceCulture;
+        
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        internal Resources() {
+        }
+        
+        /// <summary>
+        ///   Returns the cached ResourceManager instance used by this class.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Resources.ResourceManager ResourceManager {
+            get {
+                if ((resourceMan == null)) {
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ST_212cf2a9d61843698493f8888a9e11df.Properties.Resources", typeof(Resources).Assembly);
+                    resourceMan = temp;
+                }
+                return resourceMan;
+            }
+        }
+        
+        /// <summary>
+        ///   Overrides the current thread's CurrentUICulture property for all
+        ///   resource lookups using this strongly typed resource class.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Globalization.CultureInfo Culture {
+            get {
+                return resourceCulture;
+            }
+            set {
+                resourceCulture = value;
+            }
+        }
+    }
+}]]></ProjectItem>
+                          <BinaryItem
+                            Name="ST_571bf21866854c8999182e08d6bfd875.dll">TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAgAAAAA4fug4AtAnNIbgBTM0hVGhpcyBwcm9ncmFtIGNhbm5vdCBiZSBydW4gaW4gRE9TIG1v
+ZGUuDQ0KJAAAAAAAAABQRQAATAEDAP06hmcAAAAAAAAAAOAAIiALATAAABAAAAAIAAAAAAAAOi4A
+AAAgAAAAQAAAAAAAEAAgAAAAAgAABAAAAAAAAAAGAAAAAAAAAACAAAAAAgAAAAAAAAMAYIUAABAA
+ABAAAAAAEAAAEAAAAAAAABAAAAAAAAAAAAAAAOgtAABPAAAAAEAAAHgEAAAAAAAAAAAAAAAAAAAA
+AAAAAGAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAIAAACAAAAAAAAAAAAAAACCAAAEgAAAAAAAAAAAAAAC50ZXh0AAAAQA4AAAAgAAAAEAAAAAIA
+AAAAAAAAAAAAAAAAACAAAGAucnNyYwAAAHgEAAAAQAAAAAYAAAASAAAAAAAAAAAAAAAAAABAAABA
+LnJlbG9jAAAMAAAAAGAAAAACAAAAGAAAAAAAAAAAAAAAAAAAQAAAQgAAAAAAAAAAAAAAAAAAAAAc
+LgAAAAAAAEgAAAACAAUAGCEAABgMAAABAAAAAAAAADAtAAC4AAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAABMwBABVAAAAAAAAAAIoEAAACm8RAAAKcgEAAHBvEgAACnIl
+AABwAigQAAAKbxEAAApyMQAAcG8SAAAKbxMAAApvFAAACnJXAABwKBUAAApvFgAACgIoEAAAChZv
+FwAACioeAigYAAAKKh4CKBkAAAoqrn4BAAAELR5yYwAAcNADAAACKBoAAApvGwAACnMcAAAKgAEA
+AAR+AQAABCoafgIAAAQqHgKAAgAABCoafgMAAAQqHgIoHQAACioucwgAAAaAAwAABCoAQlNKQgEA
+AQAAAAAADAAAAHY0LjAuMzAzMTkAAAAABQBsAAAAyAMAACN+AAA0BAAAkAUAACNTdHJpbmdzAAAA
+AMQJAADYAAAAI1VTAJwKAAAQAAAAI0dVSUQAAACsCgAAbAEAACNCbG9iAAAAAAAAAAIAAAFXHaAB
+CQMAAAD6ATMAFgAAAQAAAB4AAAAFAAAABgAAAAkAAAABAAAAHQAAAAIAAAAQAAAAAgAAAAMAAAAE
+AAAAAQAAAAQAAAABAAAAAQAAAAAAowMBAAAAAAAGACUCcwQGALQCcwQGAHEBYAQPAOcEAAAGAJ4B
+IQQGAAgCIQQGAOkBIQQGAJsCIQQGAEUCIQQGAF4CIQQGALUBIQQGANABEAMKAHkCUgMKAPAAUgMG
+ANsD1AMGAFQBYAQGAGEF1AMGAEMEkwQGADMEDAQOACQBjQMOAIUBjQMOAAwB9wMGADkBcwQKAHsD
+UgMSACkFmwASAG4AmwAGACwD1AMGALsA1AMGAHcA1AMGAIcFIQQAAAAAJQAAAAAAAQABAAEAEADs
+A+wCOQABAAEAAAAQAJoE9gRFAAEAAwAAARAAMwX2BFkAAwAHAAMBAABMBQAAPQAEAAoAEQDgA24A
+EQDgAHIAEQBeAHYABgZNAHoAVoA8BX0AVoDAAH0AUCAAAAAAhgDyAwYAAQCxIAAAAACGGFMEBgAB
+ALkgAAAAAIMYUwQGAAEAwSAAAAAAkwg/BIEAAQDtIAAAAACTCMgAhgABAPQgAAAAAJMI1ACLAAEA
+/CAAAAAAlghoBZEAAgADIQAAAACGGFMEBgACAAshAAAAAJEYWQSWAAIAAAABAOYCCQBTBAEAEQBT
+BAYAGQBTBAoAKQBTBBAAMQBTBBAAOQBTBBAAQQBTBBAASQBTBBAAUQBTBBAAWQBTBBAAYQBTBBAA
+aQBTBAYAgQBTBAYAqQBTBBUAuQBTBAYAcQBEBRsAwQAlBSAAyQDLAyUA0QDSAisAiQAqAy8A2QBa
+BTMA0QDcAjoAwQB0BQEAcQBTBAYAiQBTBAYA4QCJAD8A4QCDBUYAkQBTBEsAsQBTBAYACAAUAGQA
+CAAYAGkAKQBzANEALgALAKkALgATALIALgAbANEALgAjANoALgArAAMBLgAzAAMBLgA7AAMBLgBD
+ANoALgBLAAkBLgBTAAMBLgBbACABQwBjAGkASQBzANEAYQB7AGkAYwBrAGkAAwABAAQAAwAAAEME
+mgAAAOgAnwAAAGwFpAACAAQAAwACAAUABQABAAYABQACAAcABwAEgAAAAQAAALkj/kgAAAAAAAAB
+AAAABAAAAAAAAAAAAAAAUgBVAAAAAAAQAAAAAAAAAAAAAABbADMDAAAAAAQAAAAAAAAAAAAAAFIA
+1AMAAAAAEAAAAAAAAAAAAAAAWwAuAAAAAAAAAAAAAQAAAKQEAAAFAAIAAAAAU1RfNTcxYmYyMTg2
+Njg1NGM4OTk5MTgyZTA4ZDZiZmQ4NzUAPE1vZHVsZT4ATWljcm9zb2Z0LlNxbFNlcnZlci5NYW5h
+Z2VkRFRTAHZhbHVlX18AbXNjb3JsaWIAZGVmYXVsdEluc3RhbmNlAFZhcmlhYmxlAFJ1bnRpbWVU
+eXBlSGFuZGxlAEdldFR5cGVGcm9tSGFuZGxlAE1pY3Jvc29mdC5TcWxTZXJ2ZXIuRHRzLlJ1bnRp
+bWUAVHlwZQBGYWlsdXJlAGdldF9DdWx0dXJlAHNldF9DdWx0dXJlAHJlc291cmNlQ3VsdHVyZQBW
+U1RBUlRTY3JpcHRPYmplY3RNb2RlbEJhc2UAQXBwbGljYXRpb25TZXR0aW5nc0Jhc2UARWRpdG9y
+QnJvd3NhYmxlU3RhdGUAQ29tcGlsZXJHZW5lcmF0ZWRBdHRyaWJ1dGUARGVidWdnZXJOb25Vc2Vy
+Q29kZUF0dHJpYnV0ZQBEZWJ1Z2dhYmxlQXR0cmlidXRlAEVkaXRvckJyb3dzYWJsZUF0dHJpYnV0
+ZQBBc3NlbWJseVRpdGxlQXR0cmlidXRlAEFzc2VtYmx5VHJhZGVtYXJrQXR0cmlidXRlAFRhcmdl
+dEZyYW1ld29ya0F0dHJpYnV0ZQBBc3NlbWJseUNvbmZpZ3VyYXRpb25BdHRyaWJ1dGUAQXNzZW1i
+bHlEZXNjcmlwdGlvbkF0dHJpYnV0ZQBDb21waWxhdGlvblJlbGF4YXRpb25zQXR0cmlidXRlAEFz
+c2VtYmx5UHJvZHVjdEF0dHJpYnV0ZQBBc3NlbWJseUNvcHlyaWdodEF0dHJpYnV0ZQBTU0lTU2Ny
+aXB0VGFza0VudHJ5UG9pbnRBdHRyaWJ1dGUAQXNzZW1ibHlDb21wYW55QXR0cmlidXRlAFJ1bnRp
+bWVDb21wYXRpYmlsaXR5QXR0cmlidXRlAGdldF9WYWx1ZQBzZXRfVmFsdWUAdmFsdWUAU1RfMjEy
+Y2YyYTlkNjE4NDM2OTg0OTNmODg4OGE5ZTExZGYAU3lzdGVtLlJ1bnRpbWUuVmVyc2lvbmluZwBU
+b1N0cmluZwBNaWNyb3NvZnQuU3FsU2VydmVyLlNjcmlwdFRhc2sATWljcm9zb2Z0LlNxbFNlcnZl
+ci5EdHMuVGFza3MuU2NyaXB0VGFzawBTY3JpcHRPYmplY3RNb2RlbABTeXN0ZW0uQ29tcG9uZW50
+TW9kZWwAU1RfNTcxYmYyMTg2Njg1NGM4OTk5MTgyZTA4ZDZiZmQ4NzUuZGxsAGdldF9JdGVtAFN5
+c3RlbQBFbnVtAHJlc291cmNlTWFuAFNjcmlwdE1haW4AU3lzdGVtLkNvbmZpZ3VyYXRpb24AU3lz
+dGVtLkdsb2JhbGl6YXRpb24AU3lzdGVtLlJlZmxlY3Rpb24AQ3VsdHVyZUluZm8AZ2V0X1Jlc291
+cmNlTWFuYWdlcgAuY3RvcgAuY2N0b3IAU3lzdGVtLkRpYWdub3N0aWNzAFN5c3RlbS5SdW50aW1l
+LkNvbXBpbGVyU2VydmljZXMAU3lzdGVtLlJlc291cmNlcwBTVF8yMTJjZjJhOWQ2MTg0MzY5ODQ5
+M2Y4ODg4YTllMTFkZi5Qcm9wZXJ0aWVzLlJlc291cmNlcy5yZXNvdXJjZXMARGVidWdnaW5nTW9k
+ZXMAU1RfMjEyY2YyYTlkNjE4NDM2OTg0OTNmODg4OGE5ZTExZGYuUHJvcGVydGllcwBnZXRfVmFy
+aWFibGVzAFNldHRpbmdzAFN1Y2Nlc3MAZ2V0X0R0cwBTY3JpcHRSZXN1bHRzAENvbmNhdABPYmpl
+Y3QAZ2V0X0RlZmF1bHQAc2V0X1Rhc2tSZXN1bHQAZ2V0X0Fzc2VtYmx5AAAjVQBzAGUAcgA6ADoA
+UABhAGMAawBhAGcAZQBOAGEAbQBlAAALTABvAGEAZAAgAAAlUwB5AHMAdABlAG0AOgA6AFMAbwB1
+AHIAYwBlAE4AYQBtAGUAAAsuAGQAdABzAHgAAHFTAFQAXwAyADEAMgBjAGYAMgBhADkAZAA2ADEA
+OAA0ADMANgA5ADgANAA5ADMAZgA4ADgAOAA4AGEAOQBlADEAMQBkAGYALgBQAHIAbwBwAGUAcgB0
+AGkAZQBzAC4AUgBlAHMAbwB1AHIAYwBlAHMAAAAAAP/r4/Ag7rBNqvFaBW2kpXAABCABAQgDIAAB
+BSABARERBCABAQ4FIAEBEVEEIAASYQQgABJlBSABEmkcAyAAHAMgAA4GAAMODg4OBCABARwGAAES
+cRF1BCAAEnkGIAIBDhJ5CLd6XFYZNOCJCImEXc2AgMyRBAAAAAAEAQAAAAMGEkkDBhJNAwYSEAIG
+CAMGERQEAAASSQQAABJNBQABARJNBAAAEhADAAABBAgAEkkECAASTQQIABIQCAEACAAAAAAAHgEA
+AQBUAhZXcmFwTm9uRXhjZXB0aW9uVGhyb3dzAQgBAAIAAAAAACgBACNTVF8yMTJjZjJhOWQ2MTg0
+MzY5ODQ5M2Y4ODg4YTllMTFkZgAABQEAAAAAFgEAEUNvcHlyaWdodCBAICAyMDIwAABJAQAaLk5F
+VEZyYW1ld29yayxWZXJzaW9uPXY0LjcBAFQOFEZyYW1ld29ya0Rpc3BsYXlOYW1lEi5ORVQgRnJh
+bWV3b3JrIDQuNwAAtAAAAM7K774BAAAAkQAAAGxTeXN0ZW0uUmVzb3VyY2VzLlJlc291cmNlUmVh
+ZGVyLCBtc2NvcmxpYiwgVmVyc2lvbj00LjAuMC4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tl
+eVRva2VuPWI3N2E1YzU2MTkzNGUwODkjU3lzdGVtLlJlc291cmNlcy5SdW50aW1lUmVzb3VyY2VT
+ZXQCAAAAAAAAAAAAAABQQURQQURQtAAAABAuAAAAAAAAAAAAACouAAAAIAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAcLgAAAAAAAAAAAAAAAF9Db3JEbGxNYWluAG1zY29yZWUuZGxsAAAAAAD/JQAgABAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAABABAAAAAYAACAAAAAAAAAAAAAAAAAAAABAAEAAAAwAACAAAAAAAAAAAAAAAAAAAABAAAA
+AABIAAAAWEAAABoEAAAAAAAAAAAAABoENAAAAFYAUwBfAFYARQBSAFMASQBPAE4AXwBJAE4ARgBP
+AAAAAAC9BO/+AAABAAAAAQD+SLkjAAABAP5IuSM/AAAAAAAAAAQAAAACAAAAAAAAAAAAAAAAAAAA
+RAAAAAEAVgBhAHIARgBpAGwAZQBJAG4AZgBvAAAAAAAkAAQAAABUAHIAYQBuAHMAbABhAHQAaQBv
+AG4AAAAAAAAAsAR6AwAAAQBTAHQAcgBpAG4AZwBGAGkAbABlAEkAbgBmAG8AAABWAwAAAQAwADAA
+MAAwADAANABiADAAAAAaAAEAAQBDAG8AbQBtAGUAbgB0AHMAAAAAAAAAIgABAAEAQwBvAG0AcABh
+AG4AeQBOAGEAbQBlAAAAAAAAAAAAcAAkAAEARgBpAGwAZQBEAGUAcwBjAHIAaQBwAHQAaQBvAG4A
+AAAAAFMAVABfADIAMQAyAGMAZgAyAGEAOQBkADYAMQA4ADQAMwA2ADkAOAA0ADkAMwBmADgAOAA4
+ADgAYQA5AGUAMQAxAGQAZgAAAD4ADwABAEYAaQBsAGUAVgBlAHIAcwBpAG8AbgAAAAAAMQAuADAA
+LgA5ADEANAA1AC4AMQA4ADYAOAA2AAAAAABwACgAAQBJAG4AdABlAHIAbgBhAGwATgBhAG0AZQAA
+AFMAVABfADUANwAxAGIAZgAyADEAOAA2ADYAOAA1ADQAYwA4ADkAOQA5ADEAOAAyAGUAMAA4AGQA
+NgBiAGYAZAA4ADcANQAuAGQAbABsAAAASAASAAEATABlAGcAYQBsAEMAbwBwAHkAcgBpAGcAaAB0
+AAAAQwBvAHAAeQByAGkAZwBoAHQAIABAACAAIAAyADAAMgAwAAAAKgABAAEATABlAGcAYQBsAFQA
+cgBhAGQAZQBtAGEAcgBrAHMAAAAAAAAAAAB4ACgAAQBPAHIAaQBnAGkAbgBhAGwARgBpAGwAZQBu
+AGEAbQBlAAAAUwBUAF8ANQA3ADEAYgBmADIAMQA4ADYANgA4ADUANABjADgAOQA5ADkAMQA4ADIA
+ZQAwADgAZAA2AGIAZgBkADgANwA1AC4AZABsAGwAAABoACQAAQBQAHIAbwBkAHUAYwB0AE4AYQBt
+AGUAAAAAAFMAVABfADIAMQAyAGMAZgAyAGEAOQBkADYAMQA4ADQAMwA2ADkAOAA0ADkAMwBmADgA
+OAA4ADgAYQA5AGUAMQAxAGQAZgAAAEIADwABAFAAcgBvAGQAdQBjAHQAVgBlAHIAcwBpAG8AbgAA
+ADEALgAwAC4AOQAxADQANQAuADEAOAA2ADgANgAAAAAARgAPAAEAQQBzAHMAZQBtAGIAbAB5ACAA
+VgBlAHIAcwBpAG8AbgAAADEALgAwAC4AOQAxADQANQAuADEAOAA2ADgANgAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAwAAAA8PgAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
+                        </ScriptProject>
+                      </DTS:ObjectData>
+                    </DTS:Executable>
+                  </DTS:Executables>
+                </DTS:EventHandler>
+              </DTS:EventHandlers>
+              <DTS:ObjectData>
+                <ExecutePackageTask>
+                  <UseProjectReference>True</UseProjectReference>
+                  <PackageName>Load member_profiles.dtsx</PackageName>
+                </ExecutePackageTask>
+              </DTS:ObjectData>
+            </DTS:Executable>
+          </DTS:Executables>
+        </DTS:Executable>
+      </DTS:Executables>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:PrecedenceConstraints>
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 3]"
+      DTS:CreationName=""
+      DTS:DTSID="{1B48BCF9-AC1D-42DA-88C1-AD7A185C6164}"
+      DTS:From="Package\Get Files from S3"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 3"
+      DTS:To="Package\Load Data" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 4]"
+      DTS:CreationName=""
+      DTS:DTSID="{D1B54EBF-EBCE-4D7A-B2AE-CF6B461113AA}"
+      DTS:From="Package\Load Data"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 4"
+      DTS:To="Package\Archive files to s3" />
+  </DTS:PrecedenceConstraints>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="8">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="165,42"
+          Id="Package\Archive files to s3"
+          TopLeft="494.333333333333,959" />
+        <NodeLayout
+          Size="164,42"
+          Id="Package\Get Files from S3"
+          TopLeft="369,382" />
+        <NodeLayout
+          Size="161,42"
+          Id="Package\Load Data\Parrallel Load\member_profiles"
+          TopLeft="251,37" />
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="649,109"
+          Size="649,152"
+          Id="Package\Load Data\Parrallel Load"
+          TopLeft="50,45" />
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="822,272"
+          Size="822,315"
+          Id="Package\Load Data"
+          TopLeft="159.333333333333,524" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 3]"
+          TopLeft="451,424">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="119.333333333333,100"
+              Start="0,0"
+              End="119.333333333333,92.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,46" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,46"
+                    Point2="0,50"
+                    Point3="4,50" />
+                  <mssgle:LineSegment
+                    End="115.333333333333,50" />
+                  <mssgle:CubicBezierSegment
+                    Point1="115.333333333333,50"
+                    Point2="119.333333333333,50"
+                    Point3="119.333333333333,54" />
+                  <mssgle:LineSegment
+                    End="119.333333333333,92.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 4]"
+          TopLeft="573.583333333333,839">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,120"
+              Start="0,0"
+              End="0,112.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,112.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+  <DtsEventHandler
+    design-time-name="Package\Archive files to s3.EventHandlers[OnPreExecute]">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
+        <NodeLayout
+          Size="163,42"
+          Id="Package\Archive files to s3.EventHandlers[OnPreExecute]\File System Task"
+          TopLeft="60,60" />
+      </GraphLayout>
+    </LayoutInfo>
+  </DtsEventHandler>
+  <DtsEventHandler
+    design-time-name="Package\Get Files from S3.EventHandlers[OnPreExecute]">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
+        <NodeLayout
+          Size="163,42"
+          Id="Package\Get Files from S3.EventHandlers[OnPreExecute]\File System Task"
+          TopLeft="60,60" />
+      </GraphLayout>
+    </LayoutInfo>
+  </DtsEventHandler>
+  <DtsEventHandler
+    design-time-name="Package\Load Data\Parrallel Load\member_profiles.EventHandlers[OnPreValidate]">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
+        <NodeLayout
+          Size="173,42"
+          Id="Package\Load Data\Parrallel Load\member_profiles.EventHandlers[OnPreValidate]\Set Package Name"
+          TopLeft="60,60" />
+      </GraphLayout>
+    </LayoutInfo>
+  </DtsEventHandler>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>

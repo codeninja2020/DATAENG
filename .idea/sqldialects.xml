@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/Django_Import/Django_S3_Import.sql" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/ServerMaintenance/CommandExecute.sql" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/ServerMaintenance/IndexOptimize.sql" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/ServerMaintenance/MaintenanceSolution.sql" dialect="GenericSQL" />
