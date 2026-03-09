@@ -1,7 +1,6 @@
 /* ============================================================================
    Django load (SSIS replacement)
    Follows the cms_load.sql pattern to replace the Django_Import SSIS project.
-
    Steps:
      1) Download all Django CSVs from S3 to D:\S3\BE_DJANGO_POSTGRES_CSV\
      2) Ensure the django schema exists and truncate destination tables
@@ -94,7 +93,7 @@ BEGIN
 
     SELECT TOP 1 @taskId = task_id
     FROM msdb.dbo.rds_fn_task_status(NULL, NULL)
-    WHERE task_type IN ('DOWNLOAD_FROM_S3','S3_DOWNLOAD')
+    WHERE task_type IN ('DOWNLOAD_FROM_S3','DOWNLOAD_FROM_S3')
     ORDER BY task_id DESC;
 
     IF @taskId IS NULL
@@ -233,9 +232,26 @@ BEGIN
         SET @SelectCols = @SelectCols + ', @fileName';
     END
 
+    DECLARE @RawCols NVARCHAR(MAX);
+    DECLARE @CreateRaw NVARCHAR(MAX);
+
+    SELECT @RawCols = STRING_AGG('    ' + QUOTENAME(c.name) + ' NVARCHAR(4000)', ',' + CHAR(13) + CHAR(10))
+    FROM sys.columns c
+    JOIN sys.tables t   ON t.object_id = c.object_id
+    JOIN sys.schemas s  ON s.schema_id = t.schema_id
+    WHERE s.name = N'django'
+      AND t.name = @entity
+      AND c.is_computed = 0
+      AND LOWER(c.name) NOT IN ('inserted_on','processid','filename');
+
+    SET @CreateRaw = N'
+IF OBJECT_ID(''tempdb..#RawData'') IS NOT NULL DROP TABLE #RawData;
+CREATE TABLE #RawData (
+' + @RawCols + '
+);';
+
     BEGIN TRY
-        EXEC('IF OBJECT_ID(''tempdb..#RawData'') IS NOT NULL DROP TABLE #RawData;');
-        EXEC('SELECT TOP 0 ' + @DataCols + ' INTO #RawData FROM django.' + QUOTENAME(@entity) + ';');
+        EXEC(@CreateRaw);
 
         EXEC(N'BULK INSERT #RawData
               FROM ''' + @localPath + '''
