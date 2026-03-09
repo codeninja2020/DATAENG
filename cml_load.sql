@@ -1,275 +1,194 @@
--- CMS IMPORT PIPELINE — FULL INSTALLATION SCRIPT
--- Database:  TEN_DATAWAREHOUSE
--- Schema:    dbo
--- Tables:    Dining, Hotels, Locations
--- Job:       CMS_S3_Import
--- Replaces:  SSIS CMS package
+"""
+This script works and is the final
+"""
 
-USE TEN_DATAWAREHOUSE;
+
+SELECT DB_NAME() AS CurrentDatabase
+
+SELECT name
+FROM sys.schemas
+ORDER BY name;
+
+CREATE SCHEMA cms AUTHORIZATION dbo; -- create cms schema
+
+--create tables
+IF OBJECT_ID(N'cms.Dining', N'U') IS NULL
+    CREATE TABLE cms.Dining (
+        dining_id          INT PRIMARY KEY NOT NULL,
+        ivector_id         INT NOT NULL,
+        ten_maid_vendor_id INT NOT NULL,
+        dining_name        NVARCHAR(255) NOT NULL,
+        location_id        INT NOT NULL,
+        latitude           FLOAT NOT NULL,
+        longitude          FLOAT NOT NULL,
+        held_table         BIT NOT NULL,
+        Inserted_On        DATETIME NOT NULL,
+        ProcessId          VARCHAR(36) NOT NULL,
+        FileName           VARCHAR(255) NOT NULL
+    );
+
+IF OBJECT_ID(N'cms.Hotels', N'U') IS NULL
+    CREATE TABLE cms.Hotels (
+        accommodation_id    INT PRIMARY KEY NOT NULL,
+        ivector_id          INT   NOT NULL,
+        accommodation_name  NVARCHAR(255) NOT NULL,
+        rating              NUMERIC(3,1)  NOT NULL,
+        latitude            FLOAT  NOT NULL,
+        longitude           FLOAT  NOT NULL,
+        location_id         INT  NOT NULL,
+        is_benefits_hotel   BIT  NOT NULL,
+        Inserted_On         DATETIME  NOT NULL,
+        ProcessId           VARCHAR(36)  NOT NULL,
+        FileName            VARCHAR(255)  NOT NULL
+    );
+
+IF OBJECT_ID(N'cms.Locations', N'U') IS NULL
+    CREATE TABLE cms.Locations (
+        location_id    INT PRIMARY KEY  NOT NULL,
+        geo_level      NVARCHAR(50)  NOT NULL,
+        langcode       NVARCHAR(5)  NOT NULL,
+        location_name  NVARCHAR(500)  NOT NULL,
+        latitude       FLOAT  NOT NULL,
+        longitude      FLOAT  NOT NULL,
+        Inserted_On    DATETIME  NOT NULL,
+        ProcessId      VARCHAR(36)  NOT NULL,
+        FileName       VARCHAR(255)  NOT NULL
+    );
+
+
+SELECT TABLE_SCHEMA, TABLE_NAME
+FROM INFORMATION_SCHEMA.TABLES
+WHERE TABLE_SCHEMA = 'cms'
+ORDER BY TABLE_NAME
+
+-- check rds helper function
+SELECT TOP 20 *
+FROM msdb.dbo.rds_fn_task_status(NULL,NULL)
+ORDER BY task_id DESC;
+
+-- check if the procedure exists
+
+SELECT OBJECT_ID('msdb.dbo.rds_fn_task_status') AS ProcExists
+SELECT OBJECT_ID('msdb.dbo.rds_fn_task_status') AS FnExists
+
+SELECT DB_NAME() AS CurrentDatabase
+
+USE msdb
 GO
 
--- STEP 1 — CREATE OR REPLACE STORED PROCEDURE dbo.usp_ImportCMS_FromS3
+EXEC sp_help 'msdb.dbo.rds_download_from_s3';
 
-CREATE OR ALTER PROCEDURE dbo.usp_ImportCMS_FromS3
-AS
+--dest 1 download
+
+EXEC msdb.dbo.rds_download_from_s3
+       @s3_arn_of_file = 'arn:aws:s3:::bi-staging.tenproduct.com/CMS/Dining.csv',
+       @rds_file_path  = 'D:\S3\CMS\Dining.csv',
+       @overwrite_file = 1 -- Yes to overwriting an existing file
+    ;
+
+-- check tasks ,check success
+SELECT TOP 5 *
+FROM msdb.dbo.rds_fn_task_status(NULL,29)
+ORDER BY task_id DESC;
+
+-- declare and run
+DECLARE @status VARCHAR(50);
+SET @status = 'IN_PROGRESS'
+
+-- look to check only when in progress
+WHILE @status IN ('CREATED','IN_PROGRESS')
 BEGIN
-    SET NOCOUNT ON;
-    SET XACT_ABORT ON;
-
-    DECLARE
-        @ProcessId VARCHAR(36) = CONVERT(CHAR(36), NEWID()),
-        @taskId INT,
-        @status NVARCHAR(50),
-        @s3Arn NVARCHAR(500),
-        @localPath NVARCHAR(500);
-
--- 1. ENSURE TABLES EXIST in dbo
-    IF OBJECT_ID('dbo.Dining', 'U') IS NULL
-        CREATE TABLE dbo.Dining (
-            dining_id INT,
-            ivector_id INT,
-            ten_maid_vendor_id INT,
-            dining_name NVARCHAR(255),
-            location_id INT,
-            latitude FLOAT,
-            longitude FLOAT,
-            held_table BIT,
-            Inserted_On DATETIME,
-            ProcessId VARCHAR(36),
-            FileName VARCHAR(255)
-        );
-
-    IF OBJECT_ID('dbo.Hotels', 'U') IS NULL
-        CREATE TABLE dbo.Hotels (
-            accommodation_id INT,
-            ivector_id INT,
-            accommodation_name NVARCHAR(255),
-            rating NUMERIC(3,1),
-            latitude FLOAT,
-            longitude FLOAT,
-            location_id INT,
-            is_benefits_hotel BIT,
-            Inserted_On DATETIME,
-            ProcessId VARCHAR(36),
-            FileName VARCHAR(255)
-        );
-
-    IF OBJECT_ID('dbo.Locations', 'U') IS NULL
-        CREATE TABLE dbo.Locations (
-            location_id INT,
-            geo_level NVARCHAR(50),
-            langcode NVARCHAR(5),
-            location_name NVARCHAR(500),
-            latitude FLOAT,
-            longitude FLOAT,
-            Inserted_On DATETIME,
-            ProcessId VARCHAR(36),
-            FileName VARCHAR(255)
-        );
-
--- 2. DEFINE FILES TO DOWNLOAD
-    CREATE TABLE #Files (
-        Id INT IDENTITY(1,1),
-        S3Arn NVARCHAR(500),
-        LocalPath NVARCHAR(500),
-        Target NVARCHAR(50)
-    );
-
-    INSERT INTO #Files (S3Arn, LocalPath, Target)
-    VALUES
-        ('arn:aws:s3:::bi-prod.tenproduct.com/CMS/Dining.csv',          'D:\S3\CMS\Dining.csv',          'Dining'),
-        ('arn:aws:s3:::bi-prod.tenproduct.com/CMS/Hotels.csv',          'D:\S3\CMS\Hotels.csv',          'Hotels'),
-        ('arn:aws:s3:::bi-prod.tenproduct.com/CMS/Travel_Location.csv', 'D:\S3\CMS\Travel_Location.csv', 'Locations');
-
--- 3. DOWNLOAD EACH FILE FROM S3
-    DECLARE @i INT = 1, @max INT = (SELECT MAX(Id) FROM #Files);
-
-    WHILE @i <= @max
-    BEGIN
-        SELECT @s3Arn = S3Arn, @localPath = LocalPath
-        FROM #Files WHERE Id = @i;
-
-        EXEC TEN_DATAWAREHOUSE.dbo.rds_download_from_s3
-            @s3_arn_of_file = @s3Arn,
-            @rds_file_path  = @localPath,
-            @overwrite_file = 1;
-
-        SELECT TOP 1 @taskId = task_id
-        FROM TEN_DATAWAREHOUSE.dbo.rds_fn_task_status(NULL, NULL)
-        WHERE task_type = 'S3_DOWNLOAD'
-        ORDER BY task_id DESC;
-
-        SET @status = 'IN_PROGRESS';
-
-        WHILE @status IN ('CREATED','IN_PROGRESS')
-        BEGIN
-            WAITFOR DELAY '00:00:05';
-            SELECT @status = lifecycle
-            FROM TEN_DATAWAREHOUSE.dbo.rds_fn_task_status(NULL, @taskId);
-        END
-
-        IF @status <> 'SUCCESS'
-            THROW 51000, 'S3 download failed.', 1;
-
-        SET @i += 1;
-    END
-
--- 4. LOAD DINING
-
-    TRUNCATE TABLE dbo.Dining;
-
-    CREATE TABLE #Dining (
-        dining_id VARCHAR(50),
-        ivector_id VARCHAR(50),
-        ten_maid_vendor_id VARCHAR(50),
-        dining_name NVARCHAR(255),
-        location_id VARCHAR(50),
-        latitude VARCHAR(50),
-        longitude VARCHAR(50),
-        held_table VARCHAR(50)
-    );
-
-    BULK INSERT #Dining
-    FROM 'D:\S3\CMS\Dining.csv'
-    WITH (
-        FIELDTERMINATOR = '|',
-        ROWTERMINATOR   = '0x0A',
-        FIRSTROW        = 2,
-        CODEPAGE        = '65001'
-    );
-
-    INSERT INTO dbo.Dining
-    SELECT
-        TRY_CAST(dining_id AS INT),
-        TRY_CAST(ivector_id AS INT),
-        TRY_CAST(ten_maid_vendor_id AS INT),
-        dining_name,
-        TRY_CAST(location_id AS INT),
-        TRY_CAST(latitude AS FLOAT),
-        TRY_CAST(longitude AS FLOAT),
-        CASE WHEN held_table IN ('1','TRUE','true','True') THEN 1 ELSE 0 END,
-        SYSDATETIME(),
-        @ProcessId,
-        'Dining.csv'
-    FROM #Dining;
-
--- 5. LOAD HOTELS
-    TRUNCATE TABLE dbo.Hotels;
-
-    CREATE TABLE #Hotels (
-        accommodation_id VARCHAR(50),
-        ivector_id VARCHAR(50),
-        accommodation_name NVARCHAR(255),
-        rating VARCHAR(50),
-        latitude VARCHAR(50),
-        longitude VARCHAR(50),
-        location_id VARCHAR(50),
-        is_benefits_hotel VARCHAR(50)
-    );
-
-    BULK INSERT #Hotels
-    FROM 'D:\S3\CMS\Hotels.csv'
-    WITH (
-        FIELDTERMINATOR = '|',
-        ROWTERMINATOR   = '0x0A',
-        FIRSTROW        = 2,
-        CODEPAGE        = '65001'
-    );
-
-    INSERT INTO dbo.Hotels
-    SELECT
-        TRY_CAST(accommodation_id AS INT),
-        TRY_CAST(ivector_id AS INT),
-        accommodation_name,
-        TRY_CAST(rating AS NUMERIC(3,1)),
-        TRY_CAST(latitude AS FLOAT),
-        TRY_CAST(longitude AS FLOAT),
-        TRY_CAST(location_id AS INT),
-        CASE WHEN is_benefits_hotel IN ('1','TRUE','true','True') THEN 1 ELSE 0 END,
-        SYSDATETIME(),
-        @ProcessId,
-        'Hotels.csv'
-    FROM #Hotels;
-
--- 6. LOAD LOCATIONS
-    TRUNCATE TABLE dbo.Locations;
-
-    CREATE TABLE #Locations (
-        location_id VARCHAR(50),
-        geo_level NVARCHAR(50),
-        langcode NVARCHAR(5),
-        location_name NVARCHAR(500),
-        latitude VARCHAR(50),
-        longitude VARCHAR(50)
-    );
-
-    BULK INSERT #Locations
-    FROM 'D:\S3\CMS\Travel_Location.csv'
-    WITH (
-        FIELDTERMINATOR = '|',
-        ROWTERMINATOR   = '0x0A',
-        FIRSTROW        = 2,
-        CODEPAGE        = '65001'
-    );
-
-    INSERT INTO dbo.Locations
-    SELECT
-        TRY_CAST(location_id AS INT),
-        geo_level,
-        langcode,
-        location_name,
-        TRY_CAST(latitude AS FLOAT),
-        TRY_CAST(longitude AS FLOAT),
-        SYSDATETIME(),
-        @ProcessId,
-        'Travel_Location.csv'
-    FROM #Locations;
-
--- 7. CLEANUP FILES
-
-    EXEC dbo.rds_delete_from_filesystem @rds_file_path = 'D:\S3\CMS\Dining.csv';
-    EXEC dbo.rds_delete_from_filesystem @rds_file_path = 'D:\S3\CMS\Hotels.csv';
-    EXEC dbo.rds_delete_from_filesystem @rds_file_path = 'D:\S3\CMS\Travel_Location.csv';
-
-END;
-GO
+    WAITFOR DELAY '00:00:05'
+    SELECT @status = lifecycle
+    FROM msdb.dbo.rds_fn_task_status(NULL, 28)
+    PRINT 'Current status: ' + @status
+END
 
 
--- STEP 2 — SQL AGENT JOB CREATION
+SELECT TOP 1 task_id, task_type,lifecycle, task_info, created_at,last_updated
+FROM msdb.dbo.rds_fn_task_status(NULL,29)
+WHERE task_type = 'DOWNLOAD_FROM_S3'
+ORDER BY task_id DESC
 
-USE msdb;
-GO
+USE TEN_DATAWAREHOUSE
 
--- Delete existing job
-IF EXISTS (SELECT 1 FROM dbo.sysjobs WHERE name = 'CMS_S3_Import')
-    EXEC sp_delete_job @job_name = 'CMS_S3_Import';
-GO
+SELECT DB_NAME() AS CurrentDB;
 
-DECLARE @jobId UNIQUEIDENTIFIER;
+-- ── Dining ──
+--USE msdb
+--GO
+--SELECT DB_NAME() AS CurrentDB;
 
-EXEC sp_add_job
-    @job_name = 'CMS_S3_Import',
-    @enabled = 1,
-    @description = 'Loads Dining, Hotels, Locations from S3 into TEN_DATAWAREHOUSE.dbo',
-    @owner_login_name = 'tenmaid_admin',
-    @job_id = @jobId OUTPUT;
 
-EXEC sp_add_jobstep
-    @job_id = @jobId,
-    @step_name = 'Run CMS Import',
-    @subsystem = 'TSQL',
-    @database_name = 'TEN_DATAWAREHOUSE',
-    @command = 'EXEC dbo.usp_ImportCMS_FromS3;',
-    @on_fail_action = 2;
+DECLARE @ProcessId VARCHAR(36)
+SET @ProcessId = CONVERT(CHAR(36),NEWID());
 
-EXEC sp_add_jobschedule
-    @job_id = @jobId,
-    @name = 'Daily 5AM',
-    @freq_type = 4,          -- daily
-    @freq_interval = 1,      -- every day
-    @active_start_time = 50000;  -- 05:00:00
+TRUNCATE TABLE cms.Dining;
 
-EXEC sp_add_jobserver
-    @job_id = @jobId,
-    @server_name = '(local)';
-GO
+-- Stage into temp table (all VARCHAR) then INSERT with type conversion + audit cols
+IF OBJECT_ID('tempdb..@Dining_Raw') IS NOT NULL
+	DROP TABLE #Dining_Raw
+
+CREATE TABLE #Dining_Raw (
+    dining_id          VARCHAR(50),
+    ivector_id         VARCHAR(50),
+    ten_maid_vendor_id VARCHAR(50),
+    dining_name        NVARCHAR(255),
+    location_id        VARCHAR(50),
+    latitude           VARCHAR(50),
+    longitude          VARCHAR(50),
+    held_table         VARCHAR(50),
+    ProcessId	VARCHAR(50),
+    FileName           VARCHAR(255)
+
+
+);
+
+-- VIEW FILE
+SELECT TOP 20 *
+FROM OPENROWSET(
+	BULK 'D:\S3\CMS\Dining.csv',
+	SINGLE_CLOB
+) AS FileContents;
+
+BULK INSERT #Dining_Raw
+FROM 'D:\S3\CMS\Dining.csv'
+WITH (
+    FIELDTERMINATOR = '|',
+    ROWTERMINATOR   = '\n',
+    FIRSTROW        = 2,
+    CODEPAGE        = '65001',
+    TABLOCK
+);
+
+-- 4. Check whether raw rows loaded
+SELECT COUNT(*) AS RawRowCount FROM #Dining_Raw;
+SELECT TOP 20 * FROM #Dining_Raw;
+
+
+SELECT TOP 20 *
+FROM msdb.dbo.rds_fn_task_status(NULL,29)
+ORDER BY task_id DESC
+
+
+INSERT INTO cms.Dining (dining_id, ivector_id, ten_maid_vendor_id, dining_name,
+                        location_id, latitude, longitude, held_table,
+                        Inserted_On, ProcessId, FileName)
+SELECT
+    TRY_CAST(dining_id AS INT),
+    TRY_CAST(ivector_id AS INT),
+    TRY_CAST(ten_maid_vendor_id AS INT),
+    dining_name,
+    TRY_CAST(location_id AS INT),
+    TRY_CAST(latitude AS FLOAT),
+    TRY_CAST(longitude AS FLOAT),
+    CASE WHEN held_table IN ('1', 'True', 'true', 'TRUE') THEN 1 ELSE 0 END,
+    GETDATE(),
+    CONVERT(VARCHAR(36),NEWID()),
+    N'Dining.csv'
+FROM #Dining_Raw;
+
+DROP TABLE #Dining_Raw;
+
+SELECT COUNT(*)
+FROM cms.Dining;
