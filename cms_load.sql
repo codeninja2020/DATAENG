@@ -1,5 +1,4 @@
-"""
-This script works and is the final
+"""This script works and is the final
 """
 
 
