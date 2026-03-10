@@ -2,12 +2,14 @@ USE TEN_DATAWAREHOUSE;
 
 /*1.TRACKING TABLES*/
 
-EXEC('CREATE SCHEMA [django]') -- create db schema
+IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = N'django')
+    EXEC('CREATE SCHEMA django AUTHORIZATION dbo'); -- create db schema
 
 IF OBJECT_ID('django.S3_Download_Tracking', 'U') IS NULL
 BEGIN
     CREATE TABLE django.S3_Download_Tracking
-w        id               INT IDENTITY(1,1) PRIMARY KEY,
+    (
+        id               INT IDENTITY(1,1) PRIMARY KEY,
         run_id           UNIQUEIDENTIFIER NOT NULL,
         file_name        NVARCHAR(200) NOT NULL,
         target_schema    SYSNAME NOT NULL,
@@ -21,9 +23,6 @@ w        id               INT IDENTITY(1,1) PRIMARY KEY,
         task_info        NVARCHAR(MAX) NULL
     );
 END;
-
-SELECT * FROM django.S3_Download_Tracking
-
 
 IF OBJECT_ID('django.S3_Load_Tracking', 'U') IS NULL
 BEGIN
@@ -112,7 +111,7 @@ BEGIN
       Ensure schema exists
     ----------------------------------------------------*/
     IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = N'django')
-        EXEC ('CREATE SCHEMA django AUTHORIZATION django;');
+        EXEC ('CREATE SCHEMA django AUTHORIZATION dbo;');
 
     /*----------------------------------------------------
       3. SUBMIT DOWNLOADS
@@ -136,7 +135,7 @@ BEGIN
         SET @s3_path = @baseS3Prefix + @file_name;
         SET @local_path = @baseLocalPrefix + @file_name;
 
-        INSERT INTO dbo.S3_Download_Tracking
+        INSERT INTO django.S3_Download_Tracking
         (
             run_id, file_name, target_schema, target_table,
             s3_path, local_path
@@ -148,27 +147,31 @@ BEGIN
         );
 
         BEGIN TRY
-            DECLARE @task TABLE (task_id INT, lifecycle VARCHAR(50), task_info NVARCHAR(MAX));
+            DECLARE @task_id INT, @task_lifecycle VARCHAR(50), @task_info NVARCHAR(MAX);
 
-            INSERT INTO @task
-            EXEC msdb.dbo.rds_download_from_s3_async
+            EXEC msdb.dbo.rds_download_from_s3
                  @s3_arn_of_file = @s3_path,
                  @rds_file_path  = @local_path,
                  @overwrite_file = 1;
 
-            UPDATE d
-            SET
-                d.task_id = t.task_id,
-                d.lifecycle = t.lifecycle,
-                d.task_info = t.task_info
-            FROM dbo.S3_Download_Tracking d
-            CROSS JOIN @task t
-            WHERE d.run_id = @run_id
-              AND d.file_name = @file_name;
+            SELECT TOP 1
+                @task_id = task_id,
+                @task_lifecycle = lifecycle,
+                @task_info = task_info
+            FROM msdb.dbo.rds_fn_task_status(NULL, NULL)
+            WHERE task_type IN ('DOWNLOAD_FROM_S3','S3_DOWNLOAD')
+            ORDER BY task_id DESC;
+
+            UPDATE django.S3_Download_Tracking
+            SET task_id = @task_id,
+                lifecycle = @task_lifecycle,
+                task_info = @task_info
+            WHERE run_id = @run_id
+              AND file_name = @file_name;
         END TRY
 
         BEGIN CATCH
-            UPDATE dbo.S3_Download_Tracking
+            UPDATE django.S3_Download_Tracking
             SET lifecycle = 'SUBMIT_FAILED',
                 task_info = ERROR_MESSAGE()
             WHERE run_id = @run_id
@@ -188,7 +191,7 @@ BEGIN
 
     DECLARE wait_cur CURSOR FAST_FORWARD FOR
         SELECT task_id, file_name
-        FROM dbo.S3_Download_Tracking
+        FROM django.S3_Download_Tracking
         WHERE run_id = @run_id
           AND task_id IS NOT NULL;
 
@@ -211,7 +214,7 @@ BEGIN
             ORDER BY task_id DESC;
         END
 
-        UPDATE dbo.S3_Download_Tracking
+        UPDATE django.S3_Download_Tracking
         SET lifecycle = @status,
             task_info = @task_info,
             completed_at = GETDATE()
@@ -229,7 +232,7 @@ BEGIN
     ----------------------------------------------------*/
     DECLARE load_cur CURSOR FAST_FORWARD FOR
         SELECT file_name, target_schema, target_table, local_path
-        FROM dbo.S3_Download_Tracking
+        FROM django.S3_Download_Tracking
         WHERE run_id = @run_id
           AND lifecycle = 'SUCCESS';
 
@@ -245,7 +248,7 @@ BEGIN
             IF OBJECT_ID(@full_table, 'U') IS NULL
                 THROW 50001, 'Target table does not exist.', 1;
 
-            INSERT INTO dbo.S3_Load_Tracking
+            INSERT INTO django.S3_Load_Tracking
             (
                 run_id, file_name, target_schema, target_table,
                 local_path, process_id, status
@@ -397,7 +400,7 @@ DROP TABLE #RawData;
                 @fname = @file_name,
                 @out_rows = @RowsInserted OUTPUT;
 
-            UPDATE dbo.S3_Load_Tracking
+            UPDATE django.S3_Load_Tracking
             SET status = 'SUCCESS',
                 rows_inserted = @RowsInserted,
                 finished_at = GETDATE()
@@ -412,7 +415,7 @@ DROP TABLE #RawData;
             END CATCH;
         END TRY
         BEGIN CATCH
-            UPDATE dbo.S3_Load_Tracking
+            UPDATE django.S3_Load_Tracking
             SET status = 'FAILED',
                 error_message = ERROR_MESSAGE(),
                 finished_at = GETDATE()
@@ -421,7 +424,7 @@ DROP TABLE #RawData;
 
             IF @@ROWCOUNT = 0
             BEGIN
-                INSERT INTO dbo.S3_Load_Tracking
+                INSERT INTO django.S3_Load_Tracking
                 (
                     run_id, file_name, target_schema, target_table,
                     local_path, process_id, status, error_message, finished_at
