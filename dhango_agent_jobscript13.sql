@@ -16,13 +16,30 @@ BEGIN
         target_table     SYSNAME NOT NULL,
         s3_path          NVARCHAR(500) NOT NULL,
         local_path       NVARCHAR(500) NOT NULL,
-        task_id          INT NULL,
+        task_id          INT ,
         submitted_at     DATETIME NOT NULL DEFAULT GETDATE(),
-        completed_at     DATETIME NULL,
-        lifecycle        VARCHAR(50) NULL,
-        task_info        NVARCHAR(MAX) NULL
+        completed_at     DATETIME ,
+        lifecycle        VARCHAR(50) ,
+        task_info        NVARCHAR(MAX)
     );
 END;
+
+/*
+ALTER TABLE django.S3_Download_Tracking
+ALTER COLUMN lifecycle VARCHAR(50);
+
+
+ALTER TABLE django.S3_Download_Tracking
+ALTER COLUMN task_info NVARCHAR(MAX);
+
+
+ALTER TABLE django.S3_Download_Tracking
+ALTER COLUMN completed_at DATETIME;
+
+
+ALTER TABLE django.S3_Download_Tracking
+ALTER COLUMN task_id INT;
+*/
 
 IF OBJECT_ID('django.S3_Load_Tracking', 'U') IS NULL
 BEGIN
@@ -36,93 +53,112 @@ BEGIN
         local_path       NVARCHAR(500) NOT NULL,
         process_id       UNIQUEIDENTIFIER NULL,
         status           VARCHAR(50) NOT NULL,
-        rows_inserted    INT NULL,
-        error_message    NVARCHAR(MAX) NULL,
+        rows_inserted    INT,
+        error_message    NVARCHAR(MAX) ,
         started_at       DATETIME NOT NULL DEFAULT GETDATE(),
-        finished_at      DATETIME NULL
+        finished_at      DATETIME
     );
 END;
+
+
 
 /* Destination tables (created from CSV headers in TP_20260209220038) */
 IF OBJECT_ID('django.articles', 'U') IS NULL
 CREATE TABLE django.articles (
-    id INT,
+    id INT PRIMARY KEY,
     title NVARCHAR(500),
     slug NVARCHAR(255),
     tags NVARCHAR(4000),
     created DATETIME,
-    inserted_on DATETIME NULL,
-    processid UNIQUEIDENTIFIER NULL,
-    filename NVARCHAR(255) NULL
+    inserted_on DATETIME ,
+    processid UNIQUEIDENTIFIER ,
+    filename NVARCHAR(255)
 );
+
+
 
 IF OBJECT_ID('django.brands', 'U') IS NULL
 CREATE TABLE django.brands (
-    id INT,
+    id INT PRIMARY KEY,
     name NVARCHAR(255),
     vendor_id INT,
+    inserted_on DATETIME ,
+    processid UNIQUEIDENTIFIER ,
+    filename NVARCHAR(255)
+);
+
+
+
+
+IF OBJECT_ID('django.dining_celebrity_chefs', 'U') IS NULL
+CREATE TABLE django.dining_celebrity_chefs (
+    id INT PRIMARY KEY,
+    name NVARCHAR(255),
     inserted_on DATETIME NULL,
     processid UNIQUEIDENTIFIER NULL,
     filename NVARCHAR(255) NULL
 );
 
-IF OBJECT_ID('django.dining_celebrity_chefs', 'U') IS NULL
-CREATE TABLE django.dining_celebrity_chefs (
-    id INT,
-    name NVARCHAR(255),
-    inserted_on DATETIME NULL,
-    processid UNIQUEIDENTIFIER NULL,
-    filename NVARCHAR(255) NULL
-);
+
+
 
 IF OBJECT_ID('django.dining_cuisine', 'U') IS NULL
 CREATE TABLE django.dining_cuisine (
     id INT,
     name NVARCHAR(255),
-    inserted_on DATETIME NULL,
-    processid UNIQUEIDENTIFIER NULL,
-    filename NVARCHAR(255) NULL
+    inserted_on DATETIME ,
+    processid UNIQUEIDENTIFIER ,
+    filename NVARCHAR(255)
 );
+
+
+
 
 IF OBJECT_ID('django.dining_hot_table_bookings', 'U') IS NULL
 CREATE TABLE django.dining_hot_table_bookings (
-    id INT,
+    id INT PRIMARY KEY,
     member_id INT,
     author_id INT,
     hot_table_id INT,
     status NVARCHAR(50),
     created DATETIME,
-    inserted_on DATETIME NULL,
-    processid UNIQUEIDENTIFIER NULL,
-    filename NVARCHAR(255) NULL
+    inserted_on DATETIME ,
+    processid UNIQUEIDENTIFIER ,
+    filename NVARCHAR(255)
 );
+
+
 
 IF OBJECT_ID('django.dining_hot_tables', 'U') IS NULL
 CREATE TABLE django.dining_hot_tables (
-    id INT,
+    id INT PRIMARY KEY,
     name NVARCHAR(255),
     id_2 INT,
     number_of_seats INT,
     available_at_datetime DATETIME,
-    inserted_on DATETIME NULL,
-    processid UNIQUEIDENTIFIER NULL,
-    filename NVARCHAR(255) NULL
+    inserted_on DATETIME ,
+    processid UNIQUEIDENTIFIER ,
+    filename NVARCHAR(255)
 );
+
+
+
 
 IF OBJECT_ID('django.dining_restaurant_benefits', 'U') IS NULL
 CREATE TABLE django.dining_restaurant_benefits (
-    id INT,
+    id INT PRIMARY KEY,
     name NVARCHAR(255),
     benefit_code NVARCHAR(100),
     restaurant_id INT,
-    inserted_on DATETIME NULL,
-    processid UNIQUEIDENTIFIER NULL,
-    filename NVARCHAR(255) NULL
+    inserted_on DATETIME,
+    processid UNIQUEIDENTIFIER,
+    filename NVARCHAR(255)
 );
+
 
 IF OBJECT_ID('django.dining_restaurants', 'U') IS NULL
 CREATE TABLE django.dining_restaurants (
-    id INT,
+    id INT PRIMARY KEY,
     name NVARCHAR(255),
     latitude FLOAT,
     longitude FLOAT,
@@ -136,10 +172,14 @@ CREATE TABLE django.dining_restaurants (
     website NVARCHAR(500),
     vendor_id INT,
     tags NVARCHAR(4000),
-    inserted_on DATETIME NULL,
-    processid UNIQUEIDENTIFIER NULL,
-    filename NVARCHAR(255) NULL
+    inserted_on DATETIME ,
+    processid UNIQUEIDENTIFIER ,
+    filename NVARCHAR(255)
 );
+
+
+
+
 
 IF OBJECT_ID('django.email_templates', 'U') IS NULL
 CREATE TABLE django.email_templates (
@@ -153,9 +193,11 @@ CREATE TABLE django.email_templates (
     filename NVARCHAR(255) NULL
 );
 
+
+
 IF OBJECT_ID('django.entertainment_artists', 'U') IS NULL
 CREATE TABLE django.entertainment_artists (
-    id INT,
+    id INT PRIMARY KEY,
     name NVARCHAR(255),
     see_artist_id INT,
     created_at DATETIME,
@@ -164,9 +206,13 @@ CREATE TABLE django.entertainment_artists (
     filename NVARCHAR(255) NULL
 );
 
+
+
+
+
 IF OBJECT_ID('django.entertainment_bookings', 'U') IS NULL
 CREATE TABLE django.entertainment_bookings (
-    id INT,
+    id INT PRIMARY KEY,
     member_id INT,
     author_id INT,
     name NVARCHAR(255),
@@ -184,7 +230,7 @@ CREATE TABLE django.entertainment_bookings (
 
 IF OBJECT_ID('django.entertainment_delivery_methods', 'U') IS NULL
 CREATE TABLE django.entertainment_delivery_methods (
-    id INT,
+    id INT PRIMARY KEY,
     name NVARCHAR(255),
     price_currency NVARCHAR(10),
     provider NVARCHAR(100),
@@ -195,7 +241,7 @@ CREATE TABLE django.entertainment_delivery_methods (
 
 IF OBJECT_ID('django.entertainment_event_tags', 'U') IS NULL
 CREATE TABLE django.entertainment_event_tags (
-    id INT,
+    id INT PRIMARY KEY,
     event_id INT,
     tag_id INT,
     inserted_on DATETIME NULL,
@@ -205,7 +251,7 @@ CREATE TABLE django.entertainment_event_tags (
 
 IF OBJECT_ID('django.entertainment_events', 'U') IS NULL
 CREATE TABLE django.entertainment_events (
-    id INT,
+    id INT PRIMARY KEY,
     name NVARCHAR(255),
     category NVARCHAR(100),
     number_of_performances INT,
@@ -221,7 +267,7 @@ CREATE TABLE django.entertainment_events (
 
 IF OBJECT_ID('django.entertainment_performances', 'U') IS NULL
 CREATE TABLE django.entertainment_performances (
-    id INT,
+    id INT PRIMARY KEY,
     event_id INT,
     venue_id INT,
     start_local_date_time DATETIME,
@@ -233,7 +279,7 @@ CREATE TABLE django.entertainment_performances (
 
 IF OBJECT_ID('django.entertainment_ticket_types', 'U') IS NULL
 CREATE TABLE django.entertainment_ticket_types (
-    id INT,
+    id INT PRIMARY KEY,
     performance_id INT,
     see_offer_id INT,
     see_price_id INT,
@@ -248,7 +294,7 @@ CREATE TABLE django.entertainment_ticket_types (
 
 IF OBJECT_ID('django.entertainment_venues', 'U') IS NULL
 CREATE TABLE django.entertainment_venues (
-    id INT,
+    id INT PRIMARY KEY,
     name NVARCHAR(255),
     longitude FLOAT,
     latitude FLOAT,
@@ -263,7 +309,7 @@ CREATE TABLE django.entertainment_venues (
 
 IF OBJECT_ID('django.interest_id_entertainment_events', 'U') IS NULL
 CREATE TABLE django.interest_id_entertainment_events (
-    primary_interest_id INT,
+    primary_interest_id INT PRIMARY KEY,
     inserted_on DATETIME NULL,
     processid UNIQUEIDENTIFIER NULL,
     filename NVARCHAR(255) NULL
@@ -271,7 +317,7 @@ CREATE TABLE django.interest_id_entertainment_events (
 
 IF OBJECT_ID('django.jobs', 'U') IS NULL
 CREATE TABLE django.jobs (
-    gateway_id NVARCHAR(100),
+    gateway_id INT PRIMARY KEY,
     gateway_status NVARCHAR(50),
     jobid NVARCHAR(50),
     module NVARCHAR(50),
@@ -283,7 +329,7 @@ CREATE TABLE django.jobs (
 
 IF OBJECT_ID('django.location_cities', 'U') IS NULL
 CREATE TABLE django.location_cities (
-    id INT,
+    id INT PRIMARY KEY,
     name NVARCHAR(255),
     geoname_id INT,
     ivector_connect_geo_level_id INT,
@@ -298,7 +344,7 @@ CREATE TABLE django.location_cities (
 
 IF OBJECT_ID('django.location_countries', 'U') IS NULL
 CREATE TABLE django.location_countries (
-    id INT,
+    id INT PRIMARY KEY,
     name NVARCHAR(255),
     geoname_id INT,
     ivector_connect_geo_level_id INT,
@@ -313,7 +359,7 @@ CREATE TABLE django.location_countries (
 
 IF OBJECT_ID('django.location_locationtags', 'U') IS NULL
 CREATE TABLE django.location_locationtags (
-    id INT,
+    id INT PRIMARY KEY,
     name NVARCHAR(255),
     geoname_id INT,
     ivector_connect_geo_level_id INT,
@@ -326,7 +372,7 @@ CREATE TABLE django.location_locationtags (
 
 IF OBJECT_ID('django.member_benefit_memberbenefit_sites', 'U') IS NULL
 CREATE TABLE django.member_benefit_memberbenefit_sites (
-    id INT,
+    id INT PRIMARY KEY,
     memberbenefit_id INT,
     site_id INT,
     inserted_on DATETIME NULL,
@@ -336,7 +382,7 @@ CREATE TABLE django.member_benefit_memberbenefit_sites (
 
 IF OBJECT_ID('django.member_benefit_memberbenefit_tags', 'U') IS NULL
 CREATE TABLE django.member_benefit_memberbenefit_tags (
-    id INT,
+    id INT PRIMARY KEY,
     memberbenefit_id INT,
     tag_id INT,
     inserted_on DATETIME NULL,
@@ -346,7 +392,7 @@ CREATE TABLE django.member_benefit_memberbenefit_tags (
 
 IF OBJECT_ID('django.member_benefits', 'U') IS NULL
 CREATE TABLE django.member_benefits (
-    id INT,
+    id INT PRIMARY KEY,
     name NVARCHAR(255),
     available_from DATETIME,
     available_until DATETIME,
@@ -370,7 +416,7 @@ CREATE TABLE django.member_benefits (
 
 IF OBJECT_ID('django.member_events', 'U') IS NULL
 CREATE TABLE django.member_events (
-    id INT,
+    id INT PRIMARY KEY,
     name NVARCHAR(255),
     latitude FLOAT,
     longitude FLOAT,
@@ -393,7 +439,7 @@ CREATE TABLE django.member_events (
 
 IF OBJECT_ID('django.member_events_bookings', 'U') IS NULL
 CREATE TABLE django.member_events_bookings (
-    id INT,
+    id INT PRIMARY KEY,
     event_id INT,
     member_id INT,
     event_date DATETIME,
@@ -406,7 +452,7 @@ CREATE TABLE django.member_events_bookings (
 
 IF OBJECT_ID('django.member_events_dates', 'U') IS NULL
 CREATE TABLE django.member_events_dates (
-    id INT,
+    id INT PRIMARY KEY,
     event_id INT,
     local_datetime DATETIME,
     inserted_on DATETIME NULL,
@@ -416,7 +462,7 @@ CREATE TABLE django.member_events_dates (
 
 IF OBJECT_ID('django.member_events_memberevent', 'U') IS NULL
 CREATE TABLE django.member_events_memberevent (
-    id INT,
+    id INT PRIMARY KEY,
     name NVARCHAR(255),
     type NVARCHAR(100),
     supplier NVARCHAR(255),
@@ -428,7 +474,7 @@ CREATE TABLE django.member_events_memberevent (
 
 IF OBJECT_ID('django.member_events_memberevent_tags', 'U') IS NULL
 CREATE TABLE django.member_events_memberevent_tags (
-    id INT,
+    id INT PRIMARY KEY,
     memberevent_id INT,
     tag_id INT,
     inserted_on DATETIME NULL,
@@ -438,7 +484,7 @@ CREATE TABLE django.member_events_memberevent_tags (
 
 IF OBJECT_ID('django.partners', 'U') IS NULL
 CREATE TABLE django.partners (
-    id INT,
+    id INT PRIMARY KEY,
     name NVARCHAR(255),
     link NVARCHAR(500),
     chosen_tags NVARCHAR(4000),
@@ -450,7 +496,7 @@ CREATE TABLE django.partners (
 
 IF OBJECT_ID('django.sites', 'U') IS NULL
 CREATE TABLE django.sites (
-    site_id INT,
+    site_id INT PRIMARY KEY,
     site_name NVARCHAR(255),
     inserted_on DATETIME NULL,
     processid UNIQUEIDENTIFIER NULL,
@@ -459,7 +505,7 @@ CREATE TABLE django.sites (
 
 IF OBJECT_ID('django.tags', 'U') IS NULL
 CREATE TABLE django.tags (
-    id INT,
+    id INT PRIMARY KEY,
     name NVARCHAR(255),
     tag_group NVARCHAR(255),
     articles_module BIT,
@@ -479,7 +525,7 @@ CREATE TABLE django.tags (
 
 IF OBJECT_ID('django.travel_airport_groups', 'U') IS NULL
 CREATE TABLE django.travel_airport_groups (
-    id INT,
+    id INT PRIMARY KEY,
     name NVARCHAR(255),
     ivector_connect_id INT,
     airports NVARCHAR(4000),
@@ -490,7 +536,7 @@ CREATE TABLE django.travel_airport_groups (
 
 IF OBJECT_ID('django.travel_airports', 'U') IS NULL
 CREATE TABLE django.travel_airports (
-    id INT,
+    id INT PRIMARY KEY,
     name NVARCHAR(255),
     ivector_connect_id INT,
     iata_code NVARCHAR(10),
@@ -504,7 +550,7 @@ CREATE TABLE django.travel_airports (
 
 IF OBJECT_ID('django.travel_car_hire_depots', 'U') IS NULL
 CREATE TABLE django.travel_car_hire_depots (
-    id INT,
+    id INT PRIMARY KEY,
     latitude FLOAT,
     longitude FLOAT,
     ivector_connect_id INT,
@@ -520,7 +566,7 @@ CREATE TABLE django.travel_car_hire_depots (
 
 IF OBJECT_ID('django.travel_hotels', 'U') IS NULL
 CREATE TABLE django.travel_hotels (
-    id INT,
+    id INT PRIMARY KEY,
     name NVARCHAR(255),
     ivector_connect_id INT,
     latitude FLOAT,
@@ -535,6 +581,22 @@ CREATE TABLE django.travel_hotels (
     processid UNIQUEIDENTIFIER NULL,
     filename NVARCHAR(255) NULL
 );
+
+
+-- count num tables created
+SELECT COUNT(*)
+FROM information_schema.tables
+WHERE table_schema = 'django';
+
+-- list tables created
+SELECT *
+FROM information_schema.tables
+WHERE table_schema = 'django';
+
+--preview a table
+
+SELECT *
+FROM TEN_DATAWAREHOUSE.django.dining_celebrity_chefs;
 
 
 /*2. MAIN PROCEDURE*/
@@ -652,7 +714,7 @@ BEGIN
                 @task_lifecycle = lifecycle,
                 @task_info = task_info
             FROM msdb.dbo.rds_fn_task_status(NULL, NULL)
-            WHERE task_type IN ('DOWNLOAD_FROM_S3','S3_DOWNLOAD')
+            WHERE task_type IN ('DOWNLOAD_FROM_S3','DOWNLOAD_FROM_S3')
             ORDER BY task_id DESC;
 
             UPDATE django.S3_Download_Tracking
@@ -940,3 +1002,21 @@ DROP TABLE #RawData;
 
     SELECT @run_id AS run_id;
 END;
+
+
+USE TEN_DATAWAREHOUSE;
+
+EXEC django.usp_Download_And_Load_S3_Files;
+
+SELECT * FROM django.S3_Download_Tracking ORDER BY id DESC;
+
+
+SELECT  *
+FROM msdb.dbo.rds_fn_task_status(NULL, NULL)
+WHERE task_type = 'DOWNLOAD_FROM_S3'
+ORDER BY task_id DESC;
+
+SELECT * FROM django.S3_Load_Tracking ORDER BY id DESC;
+
+
+
