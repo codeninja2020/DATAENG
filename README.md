@@ -1,5 +1,5 @@
 # Django S3 Loader (dhango_agent_jobscript13.sql)
-
+Yes
 This script replaces the legacy SSIS Django_Import packages. It downloads Django CSVs from S3 to the RDS host (or uses local copies), stages them into temporary tables, converts to target types, adds audit columns, and loads into `TenDataWarehouse.django.*`. It also tracks download/load status and can auto-create destination tables based on the known CSV headers in `TP_20260209220038`.
 
 ## Prerequisites
