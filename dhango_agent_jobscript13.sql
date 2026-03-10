@@ -622,7 +622,7 @@ INSERT INTO @pkTargets (table_name, pk_col) VALUES
     ('travel_car_hire_depots', 'id'),
     ('travel_hotels', 'id');
 
-DECLARE @tbl SYSNAME, @pk SYSNAME, @col SYSNAME, @colType NVARCHAR(100), @alter NVARCHAR(MAX), @pkName SYSNAME;
+DECLARE @tbl SYSNAME, @pk SYSNAME, @col SYSNAME, @colType NVARCHAR(100), @alter NVARCHAR(MAX), @pkName SYSNAME, @tblFull NVARCHAR(300);
 
 /* Enforce PK column NOT NULL and add PK constraint if missing */
 DECLARE pkCur CURSOR FAST_FORWARD FOR SELECT table_name, pk_col FROM @pkTargets;
@@ -632,6 +632,8 @@ WHILE @@FETCH_STATUS = 0
 BEGIN
     IF COL_LENGTH('django.' + @tbl, @pk) IS NOT NULL
     BEGIN
+        SET @tblFull = QUOTENAME('django') + N'.' + QUOTENAME(@tbl);
+
         SELECT TOP 1 @colType =
             CASE
                 WHEN ty.name IN ('varchar','char','varbinary','binary') THEN ty.name + '(' + CASE WHEN c.max_length = -1 THEN 'MAX' ELSE CAST(c.max_length AS VARCHAR(10)) END + ')'
@@ -650,7 +652,7 @@ BEGIN
 
         IF @colType IS NOT NULL
         BEGIN
-            SET @alter = N'ALTER TABLE django.' + QUOTENAME(@tbl) +
+            SET @alter = N'ALTER TABLE ' + @tblFull +
                          N' ALTER COLUMN ' + QUOTENAME(@pk) + N' ' + @colType + N' NOT NULL;';
             EXEC(@alter);
         END;
@@ -663,7 +665,7 @@ BEGIN
               AND kc.type = 'PK'
         )
         BEGIN
-            EXEC(N'ALTER TABLE django.' + QUOTENAME(@tbl) +
+            EXEC(N'ALTER TABLE ' + @tblFull +
                  N' ADD CONSTRAINT ' + QUOTENAME(@pkName) +
                  N' PRIMARY KEY (' + QUOTENAME(@pk) + N');');
         END
@@ -698,7 +700,8 @@ OPEN colCur;
 FETCH NEXT FROM colCur INTO @schema, @tbl, @col, @colType;
 WHILE @@FETCH_STATUS = 0
 BEGIN
-    SET @alter = N'ALTER TABLE django.' + QUOTENAME(@tbl) +
+    SET @tblFull = QUOTENAME(@schema) + N'.' + QUOTENAME(@tbl);
+    SET @alter = N'ALTER TABLE ' + @tblFull +
                  N' ALTER COLUMN ' + QUOTENAME(@col) + N' ' + @colType + N' NULL;';
     EXEC(@alter);
     FETCH NEXT FROM colCur INTO @schema, @tbl, @col, @colType;
@@ -1141,4 +1144,3 @@ WHERE task_type = 'DOWNLOAD_FROM_S3'
 ORDER BY task_id DESC;
 
 SELECT * FROM django.S3_Load_Tracking ORDER BY id DESC;
-
