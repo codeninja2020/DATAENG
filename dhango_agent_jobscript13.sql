@@ -147,7 +147,7 @@ BEGIN
         );
 
         BEGIN TRY
-            DECLARE @task_id INT, @task_lifecycle VARCHAR(50), @task_info NVARCHAR(MAX);
+            DECLARE @submit_task_id INT, @task_lifecycle VARCHAR(50), @task_info NVARCHAR(MAX);
 
             EXEC msdb.dbo.rds_download_from_s3
                  @s3_arn_of_file = @s3_path,
@@ -155,7 +155,7 @@ BEGIN
                  @overwrite_file = 1;
 
             SELECT TOP 1
-                @task_id = task_id,
+                @submit_task_id = task_id,
                 @task_lifecycle = lifecycle,
                 @task_info = task_info
             FROM msdb.dbo.rds_fn_task_status(NULL, NULL)
@@ -163,7 +163,7 @@ BEGIN
             ORDER BY task_id DESC;
 
             UPDATE django.S3_Download_Tracking
-            SET task_id = @task_id,
+            SET task_id = @submit_task_id,
                 lifecycle = @task_lifecycle,
                 task_info = @task_info
             WHERE run_id = @run_id
@@ -268,7 +268,9 @@ BEGIN
                 @ProcessIdCol NVARCHAR(200),
                 @FileNameCol NVARCHAR(200),
                 @sql NVARCHAR(MAX),
-                @RowsInserted INT = 0;
+                @RowsInserted INT = 0,
+                @FieldTerm NVARCHAR(5) = '|',
+                @RowTerm NVARCHAR(10) = '0x0A';
 
             SELECT
                 @InsertCols = STRING_AGG(QUOTENAME(c.name), ', ') WITHIN GROUP (ORDER BY c.column_id),
@@ -367,8 +369,8 @@ BULK INSERT #RawData
 FROM ''' + REPLACE(@local_path, '''', '''''') + '''
 WITH
 (
-    FIELDTERMINATOR = ''|'',
-    ROWTERMINATOR   = ''0x0A'',
+    FIELDTERMINATOR = ' + QUOTENAME(@FieldTerm, '''') + ',
+    ROWTERMINATOR   = ' + QUOTENAME(@RowTerm, '''') + ',
     FIRSTROW        = 2,
     CODEPAGE        = ''65001'',
     TABLOCK

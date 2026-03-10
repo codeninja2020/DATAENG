@@ -63,6 +63,8 @@ DECLARE @InsertedOnCol NVARCHAR(200);
 DECLARE @ProcessIdCol NVARCHAR(200);
 DECLARE @FileNameCol NVARCHAR(200);
 DECLARE @HasIdentity BIT = 0;
+DECLARE @FieldTerm NVARCHAR(5) = '|';
+DECLARE @RowTerm NVARCHAR(10) = '0x0A';
 
 SELECT @DataCols = STRING_AGG(QUOTENAME(c.name), ', ') WITHIN GROUP (ORDER BY c.column_id)
 FROM sys.columns c
@@ -166,8 +168,8 @@ BEGIN TRY
     EXEC(N'BULK INSERT #RawData
           FROM ''' + @LocalPath + '''
           WITH (
-              FIELDTERMINATOR = ''|'',
-              ROWTERMINATOR   = ''0x0A'',
+              FIELDTERMINATOR = ' + QUOTENAME(@FieldTerm, '''') + ',
+              ROWTERMINATOR   = ' + QUOTENAME(@RowTerm, '''') + ',
               FIRSTROW        = 2,
               CODEPAGE        = ''65001'',
               TABLOCK
