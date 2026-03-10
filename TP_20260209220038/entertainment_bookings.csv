@@ -1,0 +1,61 @@
+id|member_id|author_id|name|status|delivery_method_id|performance_id|payment_status|external_id|provider|created
+466|4494200|79212|Totem - Cirque Du Soleil|failed|299|93701|pending|30781|see_tickets|2019-02-11 22:07:52.222270+00:00
+590|3892378|140669|Kidz Bop Kids|failed|445|92721|pending|31514|see_tickets|2019-03-08 09:37:30.631298+00:00
+476|3852196|141973|Rosmersholm|ordered|311|93809|pending|55424651|see_tickets|2019-02-13 10:29:42.459357+00:00
+435|4143078|92101|The Starry Messenger|failed|253|89236|done|30501|see_enta|2019-01-30 10:55:43.370976+00:00
+517|3910041|139992|Betrayal|failed|376|76894|pending|31109|see_tickets|2019-02-25 18:15:29.670828+00:00
+448|4562441|8|The Lehman Trilogy|ordered|274|90754|pending|55278697|see_tickets|2019-02-05 12:43:06.551134+00:00
+592|4562441|8|Come From Away|ordered|448|101534|done|55872075|see_tickets|2019-03-08 17:29:19.588877+00:00
+487|4562441|8|Come From Away|ordered|327|76729|done|55467678|see_tickets|2019-02-14 16:31:16.842008+00:00
+483|4421600|99174|Eagles|booked|321|83051|done|55442275|see_tickets|2019-02-14 12:43:02.143673+00:00
+486|4562441|8|Come From Away|booked|325|76729|done|55467039|see_tickets|2019-02-14 16:14:15.486923+00:00
+231|4563398|85|Aladdin|booked|73|22331|done|52135448|see_enta|2018-08-30 07:39:29.013639+00:00
+460|4417556|105776|All About Eve|failed|291|57482|pending|30739|see_enta|2019-02-11 13:02:42.938565+00:00
+450|4562441|8|The Book of Mormon|ordered|279|93665|pending|55278837|see_enta|2019-02-05 12:54:39.480363+00:00
+451|4562441|8|The Book of Mormon|ordered|281|93665|pending|55278970|see_enta|2019-02-05 13:03:28.705155+00:00
+433|4560011|99621|The Starry Messenger|booked|250|89236|done|55132124|see_enta|2019-01-29 15:36:44.634780+00:00
+494|828157|97770|The Price|failed|333|68248|pending|30984|see_enta|2019-02-20 15:24:47.218113+00:00
+521|3910041|139992|Betrayal|failed|386|74432|pending|31117|see_tickets|2019-02-25 23:06:28.649292+00:00
+397|4429226|80562|The Book of Mormon|failed|233|68241|done|30407|see_enta|2019-01-21 14:27:18.172607+00:00
+477|3852196|141973|Rosmersholm|ordered|313|93809|pending|55424717|see_tickets|2019-02-13 10:32:30.998597+00:00
+522|3910041|139992|The Lehman Trilogy|failed|388|87285|pending|31118|see_tickets|2019-02-25 23:09:56.717692+00:00
+464|4417556|105776|All About Eve|failed|297|57482|pending|30767|see_enta|2019-02-11 18:17:31.732798+00:00
+485|4191547|87969|The Book of Mormon|failed|324|87478|pending|30878|see_enta|2019-02-14 13:35:23.800186+00:00
+736|5138643|291595|The Lehman Trilogy|failed|551|82722|pending|37858|see_tickets|2019-05-30 14:51:26.410539+00:00
+620|4949150|107064|Armory Show VIP - Chris Test|failed|1|103302|failed||ten_direct|2019-03-19 11:28:41.498191+00:00
+716|4845920|101393|The Starry Messenger|booked|523|89279|authorized|57004176|see_enta|2019-05-06 08:40:38.199950+00:00
+621|4949150|107064|Armory Show VIP - Chris Test|failed|1|103302|failed||ten_direct|2019-03-19 11:32:25.434261+00:00
+738|311454|111072|Kiss: End Of The Road World Tour|failed|555|88897|pending|57640|see_tickets|2019-06-01 14:55:35.523785+00:00
+544|3910041|139992|Betrayal|ordered|407|76605|done|55669064|see_tickets|2019-02-26 14:44:38.088317+00:00
+622|4949150|107064|Armory Show VIP - Chris Test|booked|1|103302|done||ten_direct|2019-03-19 11:40:44.852523+00:00
+623|4949150|107064|Armory Show VIP - Chris Test|booked|1|103302|done||ten_direct|2019-03-19 11:41:21.593084+00:00
+625|4949150|107064|Armory Show VIP - Chris Test|failed|1|103302|pending||ten_direct|2019-03-19 12:11:56.030504+00:00
+727|4668741|7520|War & Peace|booked|1|98614|done||ten_direct|2019-05-10 12:08:42.495297+00:00
+735|5138643|291595|The Lehman Trilogy|failed|549|82722|pending|37854|see_tickets|2019-05-30 13:35:42.761487+00:00
+737|5138643|291595|The Lehman Trilogy|failed|553|82722|pending|57621|see_tickets|2019-05-31 15:16:28.770872+00:00
+691|4068652|92730|All About Eve|failed|495|67467|pending|32584|see_enta|2019-04-09 16:40:35.989355+00:00
+1130|4961848|158163|Do not book Payments Test Event|failed|1|254620|failed||ten_direct|2020-08-07 08:11:46.172232+00:00
+927|3630718|96855|Rod Stewart|booked|737|171953|authorized|60177481|see_tickets|2019-10-10 11:40:49.655007+00:00
+1132|4961848|158163|Do not book Payments Test Event|booked|1|254620|done||ten_direct|2020-08-12 15:04:45.121439+00:00
+926|3630718|96855|Rod Stewart|booked|736|171101|authorized|60175973|see_tickets|2019-10-10 10:31:03.787107+00:00
+765|4555413|102934|Marvel Universe LIVE!|booked|576|139222|authorized|58465859|see_tickets|2019-07-23 16:07:22.809186+00:00
+1128|4961848|158163|Do not book Payments Test Event|booked|1|254620|done||ten_direct|2020-06-10 10:23:35.890201+00:00
+1131|4961848|158163|Do not book Payments Test Event|booked|1|254620|done||ten_direct|2020-08-07 08:16:20.598535+00:00
+1129|4961848|158163|Do not book Payments Test Event|booked|1|254620|done||ten_direct|2020-06-10 10:43:16.656096+00:00
+1133|4961848|158163|Do not book Payments Test Event|failed|1|254620|failed||ten_direct|2020-08-12 16:04:20.277944+00:00
+1134|4961848|158163|Do not book Payments Test Event|failed|1|254620|failed||ten_direct|2020-08-12 16:09:40.585665+00:00
+959|4865571|51177|Test Event|failed|409|185913|failed||ten_direct|2019-10-30 12:19:11.895396+00:00
+826|5138643|291595|Adam Kay:This is Going To Hurt|booked|651|142630|authorized|58828269|see_enta|2019-08-13 10:49:26.807157+00:00
+1135|4961848|158163|Do not book Payments Test Event|booked|1|254620|done||ten_direct|2020-08-12 16:18:52.916187+00:00
+960|4865571|51177|Test Event|failed|409|185913|failed||ten_direct|2019-10-30 12:29:15.747300+00:00
+961|4865571|51177|Test Event|booked|409|185913|done||ten_direct|2019-10-30 12:45:32.597495+00:00
+1016|3898918|140398|Michael Ball & Alfie Boe|booked|784|196890|authorized|61981780|see_tickets|2019-12-19 22:21:40.598494+00:00
+861|5135885|290196|ROH: Sleeping Beauty|booked|409|143555|done||ten_direct|2019-08-26 15:07:33.302124+00:00
+865|4650993|527|The Lion King|booked|699|118384|authorized|59038973|see_enta|2019-08-28 13:22:02.026876+00:00
+874|5075846|253644|ROH: Sleeping Beauty|booked|409|143555|done||ten_direct|2019-09-05 13:15:14.513525+00:00
+877|4552322|103039|Disney On Ice Celebrates 100 Years Of Magic|booked|712|148118|authorized|59272919|see_tickets|2019-09-09 10:24:03.108955+00:00
+880|5070237|250158|London: Sunday in the Park With George [Cancelled]|booked|409|139994|done||ten_direct|2019-09-14 11:35:02.703842+00:00
+1142|4961848|158163|Do Not Book StredCards Test Ent Event|failed|1|298242|failed||ten_direct|2021-12-01 11:42:44.050510+00:00
+1144|4961848|158163|Do Not Book StredCards Test Ent Event|booked|1|298242|done||ten_direct|2021-12-01 13:20:39.403282+00:00
+1145|4961848|158163|Do Not Book StredCards Test Ent Event|booked|1|298242|done||ten_direct|2021-12-01 14:42:34.501050+00:00
+1146|4961848|158163|Do Not Book StredCards Test Ent Event|booked|1|298242|done||ten_direct|2021-12-01 15:00:52.612200+00:00

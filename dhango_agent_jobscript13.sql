@@ -43,6 +43,499 @@ BEGIN
     );
 END;
 
+/* Destination tables (created from CSV headers in TP_20260209220038) */
+IF OBJECT_ID('django.articles', 'U') IS NULL
+CREATE TABLE django.articles (
+    id INT,
+    title NVARCHAR(500),
+    slug NVARCHAR(255),
+    tags NVARCHAR(4000),
+    created DATETIME,
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.brands', 'U') IS NULL
+CREATE TABLE django.brands (
+    id INT,
+    name NVARCHAR(255),
+    vendor_id INT,
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.dining_celebrity_chefs', 'U') IS NULL
+CREATE TABLE django.dining_celebrity_chefs (
+    id INT,
+    name NVARCHAR(255),
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.dining_cuisine', 'U') IS NULL
+CREATE TABLE django.dining_cuisine (
+    id INT,
+    name NVARCHAR(255),
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.dining_hot_table_bookings', 'U') IS NULL
+CREATE TABLE django.dining_hot_table_bookings (
+    id INT,
+    member_id INT,
+    author_id INT,
+    hot_table_id INT,
+    status NVARCHAR(50),
+    created DATETIME,
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.dining_hot_tables', 'U') IS NULL
+CREATE TABLE django.dining_hot_tables (
+    id INT,
+    name NVARCHAR(255),
+    id_2 INT,
+    number_of_seats INT,
+    available_at_datetime DATETIME,
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.dining_restaurant_benefits', 'U') IS NULL
+CREATE TABLE django.dining_restaurant_benefits (
+    id INT,
+    name NVARCHAR(255),
+    benefit_code NVARCHAR(100),
+    restaurant_id INT,
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.dining_restaurants', 'U') IS NULL
+CREATE TABLE django.dining_restaurants (
+    id INT,
+    name NVARCHAR(255),
+    latitude FLOAT,
+    longitude FLOAT,
+    city NVARCHAR(255),
+    postcode NVARCHAR(50),
+    country NVARCHAR(100),
+    cuisine NVARCHAR(255),
+    location_id INT,
+    price_indicator NVARCHAR(50),
+    rating FLOAT,
+    website NVARCHAR(500),
+    vendor_id INT,
+    tags NVARCHAR(4000),
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.email_templates', 'U') IS NULL
+CREATE TABLE django.email_templates (
+    name NVARCHAR(255),
+    campaign_id NVARCHAR(100),
+    name_2 NVARCHAR(255),
+    sites NVARCHAR(4000),
+    subject NVARCHAR(500),
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.entertainment_artists', 'U') IS NULL
+CREATE TABLE django.entertainment_artists (
+    id INT,
+    name NVARCHAR(255),
+    see_artist_id INT,
+    created_at DATETIME,
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.entertainment_bookings', 'U') IS NULL
+CREATE TABLE django.entertainment_bookings (
+    id INT,
+    member_id INT,
+    author_id INT,
+    name NVARCHAR(255),
+    status NVARCHAR(50),
+    delivery_method_id INT,
+    performance_id INT,
+    payment_status NVARCHAR(50),
+    external_id NVARCHAR(255),
+    provider NVARCHAR(100),
+    created DATETIME,
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.entertainment_delivery_methods', 'U') IS NULL
+CREATE TABLE django.entertainment_delivery_methods (
+    id INT,
+    name NVARCHAR(255),
+    price_currency NVARCHAR(10),
+    provider NVARCHAR(100),
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.entertainment_event_tags', 'U') IS NULL
+CREATE TABLE django.entertainment_event_tags (
+    id INT,
+    event_id INT,
+    tag_id INT,
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.entertainment_events', 'U') IS NULL
+CREATE TABLE django.entertainment_events (
+    id INT,
+    name NVARCHAR(255),
+    category NVARCHAR(100),
+    number_of_performances INT,
+    popularity FLOAT,
+    currency NVARCHAR(10),
+    active BIT,
+    created DATETIME,
+    chosen_tags NVARCHAR(4000),
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.entertainment_performances', 'U') IS NULL
+CREATE TABLE django.entertainment_performances (
+    id INT,
+    event_id INT,
+    venue_id INT,
+    start_local_date_time DATETIME,
+    ten_direct_vendor_id INT,
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.entertainment_ticket_types', 'U') IS NULL
+CREATE TABLE django.entertainment_ticket_types (
+    id INT,
+    performance_id INT,
+    see_offer_id INT,
+    see_price_id INT,
+    price DECIMAL(18,2),
+    price_currency NVARCHAR(10),
+    face_price DECIMAL(18,2),
+    face_price_currency NVARCHAR(10),
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.entertainment_venues', 'U') IS NULL
+CREATE TABLE django.entertainment_venues (
+    id INT,
+    name NVARCHAR(255),
+    longitude FLOAT,
+    latitude FLOAT,
+    country NVARCHAR(100),
+    postcode NVARCHAR(50),
+    location_id INT,
+    see_venue_id INT,
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.interest_id_entertainment_events', 'U') IS NULL
+CREATE TABLE django.interest_id_entertainment_events (
+    primary_interest_id INT,
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.jobs', 'U') IS NULL
+CREATE TABLE django.jobs (
+    gateway_id NVARCHAR(100),
+    gateway_status NVARCHAR(50),
+    jobid NVARCHAR(50),
+    module NVARCHAR(50),
+    productid NVARCHAR(50),
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.location_cities', 'U') IS NULL
+CREATE TABLE django.location_cities (
+    id INT,
+    name NVARCHAR(255),
+    geoname_id INT,
+    ivector_connect_geo_level_id INT,
+    ivector_connect_id INT,
+    ivector_connect_unique_code NVARCHAR(50),
+    administrative_subdivision NVARCHAR(255),
+    country NVARCHAR(100),
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.location_countries', 'U') IS NULL
+CREATE TABLE django.location_countries (
+    id INT,
+    name NVARCHAR(255),
+    geoname_id INT,
+    ivector_connect_geo_level_id INT,
+    ivector_connect_id INT,
+    ivector_connect_unique_code NVARCHAR(50),
+    alpha3_code NVARCHAR(3),
+    iso_code NVARCHAR(2),
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.location_locationtags', 'U') IS NULL
+CREATE TABLE django.location_locationtags (
+    id INT,
+    name NVARCHAR(255),
+    geoname_id INT,
+    ivector_connect_geo_level_id INT,
+    ivector_connect_id INT,
+    ivector_connect_unique_code NVARCHAR(50),
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.member_benefit_memberbenefit_sites', 'U') IS NULL
+CREATE TABLE django.member_benefit_memberbenefit_sites (
+    id INT,
+    memberbenefit_id INT,
+    site_id INT,
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.member_benefit_memberbenefit_tags', 'U') IS NULL
+CREATE TABLE django.member_benefit_memberbenefit_tags (
+    id INT,
+    memberbenefit_id INT,
+    tag_id INT,
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.member_benefits', 'U') IS NULL
+CREATE TABLE django.member_benefits (
+    id INT,
+    name NVARCHAR(255),
+    available_from DATETIME,
+    available_until DATETIME,
+    brand_id INT,
+    location_id INT,
+    status NVARCHAR(50),
+    url_redemption NVARCHAR(500),
+    online_redemption_code NVARCHAR(100),
+    in_store_redemption NVARCHAR(100),
+    has_redemption_phone_number BIT,
+    phone_number NVARCHAR(50),
+    rating FLOAT,
+    alternate_rating FLOAT,
+    chosen_tags NVARCHAR(4000),
+    sites NVARCHAR(4000),
+    ten_maid_offer_id INT,
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.member_events', 'U') IS NULL
+CREATE TABLE django.member_events (
+    id INT,
+    name NVARCHAR(255),
+    latitude FLOAT,
+    longitude FLOAT,
+    city NVARCHAR(255),
+    country NVARCHAR(100),
+    postcode NVARCHAR(50),
+    type NVARCHAR(100),
+    adult_ticket_price DECIMAL(18,2),
+    adult_ticket_price_currency NVARCHAR(10),
+    child_ticket_price DECIMAL(18,2),
+    child_ticket_price_currency NVARCHAR(10),
+    chosen_tags NVARCHAR(4000),
+    sites NVARCHAR(4000),
+    supplier NVARCHAR(255),
+    vendor_id INT,
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.member_events_bookings', 'U') IS NULL
+CREATE TABLE django.member_events_bookings (
+    id INT,
+    event_id INT,
+    member_id INT,
+    event_date DATETIME,
+    booked_timestamp DATETIME,
+    booking_status NVARCHAR(50),
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.member_events_dates', 'U') IS NULL
+CREATE TABLE django.member_events_dates (
+    id INT,
+    event_id INT,
+    local_datetime DATETIME,
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.member_events_memberevent', 'U') IS NULL
+CREATE TABLE django.member_events_memberevent (
+    id INT,
+    name NVARCHAR(255),
+    type NVARCHAR(100),
+    supplier NVARCHAR(255),
+    primary_interest_id INT,
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.member_events_memberevent_tags', 'U') IS NULL
+CREATE TABLE django.member_events_memberevent_tags (
+    id INT,
+    memberevent_id INT,
+    tag_id INT,
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.partners', 'U') IS NULL
+CREATE TABLE django.partners (
+    id INT,
+    name NVARCHAR(255),
+    link NVARCHAR(500),
+    chosen_tags NVARCHAR(4000),
+    sites NVARCHAR(4000),
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.sites', 'U') IS NULL
+CREATE TABLE django.sites (
+    site_id INT,
+    site_name NVARCHAR(255),
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.tags', 'U') IS NULL
+CREATE TABLE django.tags (
+    id INT,
+    name NVARCHAR(255),
+    tag_group NVARCHAR(255),
+    articles_module BIT,
+    travel_module BIT,
+    dining_module BIT,
+    entertainment_module BIT,
+    member_benefits_module BIT,
+    member_events_module BIT,
+    interest_type NVARCHAR(255),
+    is_interest BIT,
+    created DATETIME,
+    modified DATETIME,
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.travel_airport_groups', 'U') IS NULL
+CREATE TABLE django.travel_airport_groups (
+    id INT,
+    name NVARCHAR(255),
+    ivector_connect_id INT,
+    airports NVARCHAR(4000),
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.travel_airports', 'U') IS NULL
+CREATE TABLE django.travel_airports (
+    id INT,
+    name NVARCHAR(255),
+    ivector_connect_id INT,
+    iata_code NVARCHAR(10),
+    location_id INT,
+    latitude FLOAT,
+    longitude FLOAT,
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.travel_car_hire_depots', 'U') IS NULL
+CREATE TABLE django.travel_car_hire_depots (
+    id INT,
+    latitude FLOAT,
+    longitude FLOAT,
+    ivector_connect_id INT,
+    name NVARCHAR(255),
+    vendor_id INT,
+    location_id INT,
+    created DATETIME,
+    deleted DATETIME,
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
+IF OBJECT_ID('django.travel_hotels', 'U') IS NULL
+CREATE TABLE django.travel_hotels (
+    id INT,
+    name NVARCHAR(255),
+    ivector_connect_id INT,
+    latitude FLOAT,
+    longitude FLOAT,
+    star_rating FLOAT,
+    location_id INT,
+    city NVARCHAR(255),
+    country NVARCHAR(100),
+    expedia_id INT,
+    benefit_collections NVARCHAR(4000),
+    inserted_on DATETIME NULL,
+    processid UNIQUEIDENTIFIER NULL,
+    filename NVARCHAR(255) NULL
+);
+
 
 /*2. MAIN PROCEDURE*/
 CREATE OR ALTER PROCEDURE django.usp_Download_And_Load_S3_Files
