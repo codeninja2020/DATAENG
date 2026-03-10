@@ -19,7 +19,7 @@ This script replaces the legacy SSIS Django_Import packages. It downloads Django
    - Polls `rds_fn_task_status` until each download is finished; records final lifecycle/task_info.
    - For successful downloads: stages raw data into `#RawData`, BULK INSERTs, truncates the target table, inserts with `TRY_CONVERT` to destination types, sets audit columns if present, handles identity insert when needed, and deletes the local file.
    - Populates `django.S3_Load_Tracking` with status, row counts, and errors.
-
+- 
 ## How to run
 1) Open a query window in SSMS connected to the RDS instance.
 2) Ensure the local folder exists on the RDS host: `D:\S3\BE_DJANGO_POSTGRES_CSV\TP_20260209220038\` (or adjust `@baseLocalPrefix` in the script).
