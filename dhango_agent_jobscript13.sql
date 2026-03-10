@@ -187,7 +187,7 @@ BEGIN
     /*----------------------------------------------------
       4. WAIT FOR DOWNLOADS TO FINISH
     ----------------------------------------------------*/
-    DECLARE @task_id INT, @status VARCHAR(50), @task_info NVARCHAR(MAX);
+    DECLARE @task_id INT, @status VARCHAR(50), @poll_task_info NVARCHAR(MAX);
 
     DECLARE wait_cur CURSOR FAST_FORWARD FOR
         SELECT task_id, file_name
@@ -208,7 +208,7 @@ BEGIN
 
             SELECT TOP 1
                 @status = lifecycle,
-                @task_info = task_info
+                @poll_task_info = task_info
             FROM msdb.dbo.rds_fn_task_status(NULL, NULL)
             WHERE task_id = @task_id
             ORDER BY task_id DESC;
@@ -216,7 +216,7 @@ BEGIN
 
         UPDATE django.S3_Download_Tracking
         SET lifecycle = @status,
-            task_info = @task_info,
+            task_info = @poll_task_info,
             completed_at = GETDATE()
         WHERE run_id = @run_id
           AND task_id = @task_id;
