@@ -14,6 +14,7 @@ BEGIN
     SET XACT_ABORT ON;
 
     DECLARE @run_id UNIQUEIDENTIFIER = NEWID();
+    DECLARE @DoDownload BIT = 0; -- set to 1 to download from S3, 0 to use existing local files
 
     DECLARE @baseS3Prefix NVARCHAR(300) =
         'arn:aws:s3:::bi-staging.tenproduct.com/BE_DJANGO_POSTGRES_CSV/TP_20260209220038/';
@@ -84,128 +85,136 @@ BEGIN
         @target_table SYSNAME,
         @s3_path NVARCHAR(500),
         @local_path NVARCHAR(500);
-    /*
-    DECLARE file_cur CURSOR FAST_FORWARD FOR
-        SELECT file_name, target_schema, target_table
-        FROM @files;
 
-    OPEN file_cur;
-    FETCH NEXT FROM file_cur INTO @file_name, @target_schema, @target_table;
-
-    WHILE @@FETCH_STATUS = 0
+    IF @DoDownload = 1
     BEGIN
-        SET @s3_path = @baseS3Prefix + @file_name;
-        SET @local_path = @baseLocalPrefix + @file_name;
+        DECLARE file_cur CURSOR FAST_FORWARD FOR
+            SELECT file_name, target_schema, target_table
+            FROM @files;
 
-        INSERT INTO django.S3_Download_Tracking
-        (
-            run_id, file_name, target_schema, target_table,
-            s3_path, local_path
-        )
-        VALUES
-        (
-            @run_id, @file_name, @target_schema, @target_table,
-            @s3_path, @local_path
-        );
-
-        BEGIN TRY
-            DECLARE @submit_task_id INT, @task_lifecycle VARCHAR(50), @task_info NVARCHAR(MAX);
-
-            EXEC msdb.dbo.rds_download_from_s3
-                 @s3_arn_of_file = @s3_path,
-                 @rds_file_path  = @local_path,
-                 @overwrite_file = 1;
-
-            -- Wait a moment for task to be registered
-            WAITFOR DELAY '00:00:02';
-
-            SELECT TOP 1
-                @submit_task_id = task_id,
-                @task_lifecycle = lifecycle,
-                @task_info = task_info
-            FROM msdb.dbo.rds_fn_task_status(NULL, NULL)
-            WHERE task_type = 'DOWNLOAD_FROM_S3'
-            ORDER BY task_id DESC;
-
-            -- If task_id is found, update the tracking record; otherwise mark as SUBMITTED_PENDING_TASK_ID
-            IF @submit_task_id IS NOT NULL
-            BEGIN
-                UPDATE django.S3_Download_Tracking
-                SET task_id = @submit_task_id,
-                    lifecycle = ISNULL(@task_lifecycle, 'CREATED'),
-                    task_info = @task_info
-                WHERE run_id = @run_id
-                  AND file_name = @file_name;
-            END
-            ELSE
-            BEGIN
-                UPDATE django.S3_Download_Tracking
-                SET lifecycle = 'SUBMITTED_PENDING_TASK_ID',
-                    task_info = 'Task submitted but ID not yet available in system'
-                WHERE run_id = @run_id
-                  AND file_name = @file_name;
-            END
-        END TRY
-
-        BEGIN CATCH
-            UPDATE django.S3_Download_Tracking
-            SET lifecycle = 'SUBMIT_FAILED',
-                task_info = 'Error: ' + ERROR_MESSAGE()
-            WHERE run_id = @run_id
-              AND file_name = @file_name;
-
-            PRINT 'Error submitting ' + @file_name + ': ' + ERROR_MESSAGE();
-        END CATCH;
-
+        OPEN file_cur;
         FETCH NEXT FROM file_cur INTO @file_name, @target_schema, @target_table;
-    END
 
-    CLOSE file_cur;
-    DEALLOCATE file_cur;
-	*/
-    /*----------------------------------------------------
-      4. WAIT FOR DOWNLOADS TO FINISH
-    ----------------------------------------------------*/
-   /* DECLARE @task_id INT, @status VARCHAR(50), @poll_task_info NVARCHAR(MAX);
-
-    DECLARE wait_cur CURSOR FAST_FORWARD FOR
-        SELECT task_id, file_name
-        FROM django.S3_Download_Tracking
-        WHERE run_id = @run_id
-          AND task_id IS NOT NULL;
-
-    OPEN wait_cur;
-    FETCH NEXT FROM wait_cur INTO @task_id, @file_name;
-
-    WHILE @@FETCH_STATUS = 0
-    BEGIN
-        SET @status = 'CREATED';
-
-        WHILE @status IN ('CREATED', 'IN_PROGRESS')
+        WHILE @@FETCH_STATUS = 0
         BEGIN
-            WAITFOR DELAY '00:00:05';
+            SET @s3_path = @baseS3Prefix + @file_name;
+            SET @local_path = @baseLocalPrefix + @file_name;
 
-            SELECT TOP 1
-                @status = lifecycle,
-                @poll_task_info = task_info
-            FROM msdb.dbo.rds_fn_task_status(NULL, NULL)
-            WHERE task_id = @task_id
-            ORDER BY task_id DESC;
+            INSERT INTO django.S3_Download_Tracking
+            (
+                run_id, file_name, target_schema, target_table,
+                s3_path, local_path
+            )
+            VALUES
+            (
+                @run_id, @file_name, @target_schema, @target_table,
+                @s3_path, @local_path
+            );
+
+            BEGIN TRY
+                DECLARE @submit_task_id INT, @task_lifecycle VARCHAR(50), @task_info NVARCHAR(MAX);
+
+                EXEC msdb.dbo.rds_download_from_s3
+                     @s3_arn_of_file = @s3_path,
+                     @rds_file_path  = @local_path,
+                     @overwrite_file = 1;
+
+                WAITFOR DELAY '00:00:02';
+
+                SELECT TOP 1
+                    @submit_task_id = task_id,
+                    @task_lifecycle = lifecycle,
+                    @task_info = task_info
+                FROM msdb.dbo.rds_fn_task_status(NULL, NULL)
+                WHERE task_type = 'DOWNLOAD_FROM_S3'
+                ORDER BY task_id DESC;
+
+                IF @submit_task_id IS NOT NULL
+                BEGIN
+                    UPDATE django.S3_Download_Tracking
+                    SET task_id = @submit_task_id,
+                        lifecycle = ISNULL(@task_lifecycle, 'CREATED'),
+                        task_info = @task_info
+                    WHERE run_id = @run_id
+                      AND file_name = @file_name;
+                END
+                ELSE
+                BEGIN
+                    UPDATE django.S3_Download_Tracking
+                    SET lifecycle = 'SUBMITTED_PENDING_TASK_ID',
+                        task_info = 'Task submitted but ID not yet available in system'
+                    WHERE run_id = @run_id
+                      AND file_name = @file_name;
+                END
+            END TRY
+
+            BEGIN CATCH
+                UPDATE django.S3_Download_Tracking
+                SET lifecycle = 'SUBMIT_FAILED',
+                    task_info = 'Error: ' + ERROR_MESSAGE()
+                WHERE run_id = @run_id
+                  AND file_name = @file_name;
+
+                PRINT 'Error submitting ' + @file_name + ': ' + ERROR_MESSAGE();
+            END CATCH;
+
+            FETCH NEXT FROM file_cur INTO @file_name, @target_schema, @target_table;
         END
 
-        UPDATE django.S3_Download_Tracking
-        SET lifecycle = @status,
-            task_info = @poll_task_info,
-            completed_at = GETDATE()
-        WHERE run_id = @run_id
-          AND task_id = @task_id;
+        CLOSE file_cur;
+        DEALLOCATE file_cur;
 
+        /* Wait for downloads to finish */
+        DECLARE @task_id INT, @status VARCHAR(50), @poll_task_info NVARCHAR(MAX);
+
+        DECLARE wait_cur CURSOR FAST_FORWARD FOR
+            SELECT task_id, file_name
+            FROM django.S3_Download_Tracking
+            WHERE run_id = @run_id
+              AND task_id IS NOT NULL;
+
+        OPEN wait_cur;
         FETCH NEXT FROM wait_cur INTO @task_id, @file_name;
-    END
 
-    CLOSE wait_cur;
-    DEALLOCATE wait_cur;
-    */
+        WHILE @@FETCH_STATUS = 0
+        BEGIN
+            SET @status = 'CREATED';
+
+            WHILE @status IN ('CREATED', 'IN_PROGRESS')
+            BEGIN
+                WAITFOR DELAY '00:00:05';
+
+                SELECT TOP 1
+                    @status = lifecycle,
+                    @poll_task_info = task_info
+                FROM msdb.dbo.rds_fn_task_status(NULL, NULL)
+                WHERE task_id = @task_id
+                ORDER BY task_id DESC;
+            END
+
+            UPDATE django.S3_Download_Tracking
+            SET lifecycle = @status,
+                task_info = @poll_task_info,
+                completed_at = GETDATE()
+            WHERE run_id = @run_id
+              AND task_id = @task_id;
+
+            FETCH NEXT FROM wait_cur INTO @task_id, @file_name;
+        END
+
+        CLOSE wait_cur;
+        DEALLOCATE wait_cur;
+    END
+    ELSE
+    BEGIN
+        -- Seed tracking to drive the load from existing local files
+        INSERT INTO django.S3_Download_Tracking (run_id, file_name, target_schema, target_table, s3_path, local_path, lifecycle, completed_at)
+        SELECT @run_id, file_name, target_schema, target_table,
+               @baseS3Prefix + file_name,
+               @baseLocalPrefix + file_name,
+               'SUCCESS', GETDATE()
+        FROM @files;
+    END
 
     /*
       5. LOAD SUCCESSFUL DOWNLOADS
