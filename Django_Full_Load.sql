@@ -443,7 +443,6 @@ USE TEN_DATAWAREHOUSE;
 EXEC django.usp_Download_And_Load_S3_Files;
 
 
-
 SELECT * FROM django.S3_Download_Tracking ORDER BY id DESC;
 
 

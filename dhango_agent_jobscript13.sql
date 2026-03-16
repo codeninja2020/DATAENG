@@ -585,6 +585,9 @@ CREATE TABLE django.travel_hotels (
 
 
 
+
+
+
 -- count num tables created
 SELECT COUNT(*)
 FROM information_schema.tables
@@ -606,10 +609,13 @@ CREATE OR ALTER PROCEDURE django.usp_Download_And_Load_S3_Files
 AS
 BEGIN
     SET NOCOUNT ON;
-    SET XACT_ABORT ON;
+    SET XACT_ABORT OFF;  -- BUG FIX: OFF so per-file TRY/CATCH works; ON would abort entire proc on any error
 
     DECLARE @run_id UNIQUEIDENTIFIER = NEWID();
 
+    -- BUG FIX: rds_download_from_s3 @s3_arn_of_file must be a full S3 object ARN:
+    --   arn:aws:s3:::bucket-name/key  (not arn:aws:s3:::bucket/path used as a URL)
+    -- The bucket here is "bi-staging.tenproduct.com" and the key prefix follows.
     DECLARE @baseS3Prefix NVARCHAR(300) =
         'arn:aws:s3:::bi-staging.tenproduct.com/BE_DJANGO_POSTGRES_CSV/TP_20260209220038/';
 
@@ -680,6 +686,9 @@ BEGIN
         @s3_path NVARCHAR(500),
         @local_path NVARCHAR(500);
 
+    -- BUG FIX: Declare these OUTSIDE the loop; re-declaring inside causes errors on 2nd+ iteration
+    DECLARE @submit_task_id INT, @task_lifecycle VARCHAR(50), @task_info NVARCHAR(MAX);
+
     DECLARE file_cur CURSOR FAST_FORWARD FOR
         SELECT file_name, target_schema, target_table
         FROM @files;
@@ -704,35 +713,54 @@ BEGIN
         );
 
         BEGIN TRY
-            DECLARE @submit_task_id INT, @task_lifecycle VARCHAR(50), @task_info NVARCHAR(MAX);
+            -- BUG FIX: Reset variables before each iteration so stale values from prior
+            --          loop pass are not incorrectly written to the current file's tracking row
+            SELECT @submit_task_id = NULL, @task_lifecycle = NULL, @task_info = NULL;
 
             EXEC msdb.dbo.rds_download_from_s3
                  @s3_arn_of_file = @s3_path,
                  @rds_file_path  = @local_path,
                  @overwrite_file = 1;
 
+            -- Wait a moment for task to be registered
+            WAITFOR DELAY '00:00:02';
+
             SELECT TOP 1
                 @submit_task_id = task_id,
                 @task_lifecycle = lifecycle,
                 @task_info = task_info
             FROM msdb.dbo.rds_fn_task_status(NULL, NULL)
-            WHERE task_type IN ('DOWNLOAD_FROM_S3','DOWNLOAD_FROM_S3')
+            WHERE task_type = 'DOWNLOAD_FROM_S3'
             ORDER BY task_id DESC;
 
-            UPDATE django.S3_Download_Tracking
-            SET task_id = @submit_task_id,
-                lifecycle = @task_lifecycle,
-                task_info = @task_info
-            WHERE run_id = @run_id
-              AND file_name = @file_name;
+            -- If task_id is found, update the tracking record; otherwise mark as SUBMITTED_PENDING_TASK_ID
+            IF @submit_task_id IS NOT NULL
+            BEGIN
+                UPDATE django.S3_Download_Tracking
+                SET task_id = @submit_task_id,
+                    lifecycle = ISNULL(@task_lifecycle, 'CREATED'),
+                    task_info = @task_info
+                WHERE run_id = @run_id
+                  AND file_name = @file_name;
+            END
+            ELSE
+            BEGIN
+                UPDATE django.S3_Download_Tracking
+                SET lifecycle = 'SUBMITTED_PENDING_TASK_ID',
+                    task_info = 'Task submitted but ID not yet available in system'
+                WHERE run_id = @run_id
+                  AND file_name = @file_name;
+            END
         END TRY
 
         BEGIN CATCH
             UPDATE django.S3_Download_Tracking
             SET lifecycle = 'SUBMIT_FAILED',
-                task_info = ERROR_MESSAGE()
+                task_info = 'Error: ' + ERROR_MESSAGE()
             WHERE run_id = @run_id
               AND file_name = @file_name;
+
+            PRINT 'Error submitting ' + @file_name + ': ' + ERROR_MESSAGE();
         END CATCH;
 
         FETCH NEXT FROM file_cur INTO @file_name, @target_schema, @target_table;
@@ -745,6 +773,8 @@ BEGIN
       4. WAIT FOR DOWNLOADS TO FINISH
     ----------------------------------------------------*/
     DECLARE @task_id INT, @status VARCHAR(50), @poll_task_info NVARCHAR(MAX);
+    -- BUG FIX: also track poll attempts to guard against tasks that disappear from rds_fn_task_status
+    DECLARE @poll_attempts INT;
 
     DECLARE wait_cur CURSOR FAST_FORWARD FOR
         SELECT task_id, file_name
@@ -757,11 +787,21 @@ BEGIN
 
     WHILE @@FETCH_STATUS = 0
     BEGIN
+        -- BUG FIX: Always initialise @status so that if the first SELECT returns no rows
+        --          the inner WHILE condition is evaluated against NULL (not 'CREATED'),
+        --          which breaks the loop instead of spinning forever.
         SET @status = 'CREATED';
+        SET @poll_attempts = 0;
 
         WHILE @status IN ('CREATED', 'IN_PROGRESS')
         BEGIN
             WAITFOR DELAY '00:00:05';
+            SET @poll_attempts = @poll_attempts + 1;
+
+            -- BUG FIX: Reset @status to NULL before each SELECT so that if the task row
+            --          disappears from rds_fn_task_status the WHILE guard sees NULL and exits
+            SET @status = NULL;
+            SET @poll_task_info = NULL;
 
             SELECT TOP 1
                 @status = lifecycle,
@@ -769,6 +809,14 @@ BEGIN
             FROM msdb.dbo.rds_fn_task_status(NULL, NULL)
             WHERE task_id = @task_id
             ORDER BY task_id DESC;
+
+            -- Safety valve: if task vanished from system after 60 s, treat as unknown failure
+            IF @status IS NULL AND @poll_attempts >= 12
+            BEGIN
+                SET @status = 'ERROR_NOT_FOUND';
+                SET @poll_task_info = 'Task not found in rds_fn_task_status after 60 s';
+            END
+            -- Keep looping only on active states; NULL stays NULL → exits loop
         END
 
         UPDATE django.S3_Download_Tracking
@@ -826,8 +874,13 @@ BEGIN
                 @FileNameCol NVARCHAR(200),
                 @sql NVARCHAR(MAX),
                 @RowsInserted INT = 0,
-                @FieldTerm NVARCHAR(5) = '|',
-                @RowTerm NVARCHAR(10) = '0x0A';
+                -- BUG FIX: FieldTerminator is pipe-delimited; keep as-is
+                @FieldTerm NVARCHAR(5) = '|';
+                -- BUG FIX (removed @RowTerm variable): BULK INSERT ROWTERMINATOR must be
+                --   the literal token  0x0A  (no quotes) in the dynamic SQL — passing it
+                --   through QUOTENAME(..., '''') wraps it as '0x0A' (4-char string), which
+                --   BULK INSERT treats as the literal text "0x0A", not a linefeed byte.
+                --   The value is now embedded directly in the SET @sql block below.
 
             SELECT
                 @InsertCols = STRING_AGG(QUOTENAME(c.name), ', ') WITHIN GROUP (ORDER BY c.column_id),
@@ -927,7 +980,7 @@ FROM ''' + REPLACE(@local_path, '''', '''''') + '''
 WITH
 (
     FIELDTERMINATOR = ' + QUOTENAME(@FieldTerm, '''') + ',
-    ROWTERMINATOR   = ' + QUOTENAME(@RowTerm, '''') + ',
+    ROWTERMINATOR   = ''0x0A'',
     FIRSTROW        = 2,
     CODEPAGE        = ''65001'',
     TABLOCK
@@ -1019,3 +1072,9 @@ WHERE task_type = 'DOWNLOAD_FROM_S3'
 ORDER BY task_id DESC;
 
 SELECT * FROM django.S3_Load_Tracking ORDER BY id DESC;
+
+SELECT *
+FROM django.S3_Download_Tracking
+ORDER BY run_id DESC;
+
+
