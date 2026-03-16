@@ -76,4 +76,4 @@ Use this checklist:
 
 5. **If you must run legacy SSIS code**, create/populate `SSIS_tableConfig` per that legacy package's expectations, or migrate that job step to use `django.usp_Download_And_Load_S3_Files`.
 
-For direct troubleshooting against the legacy stored procedure, run `TenGroupFileLoader_diagnostic.sql`.
+For direct troubleshooting against the legacy stored procedure, run `TenGroupFileLoader/TenGroupFileLoader_diagnostic.sql`.
