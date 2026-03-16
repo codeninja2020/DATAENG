@@ -47,3 +47,31 @@ This script replaces the legacy SSIS Django_Import packages. It downloads Django
 - Limit to fewer files: edit the manifest in the `@files` table.
 - Different delimiter/line ending: adjust `@FieldTerm` and `@RowTerm` variables in the load block.
 - If a target table is missing at runtime, the script will create it using the typed DDL embedded from `TP_20260209220038` headers (audits included).
+
+## Troubleshooting: `No SSIS_tableConfig setup db` (legacy TenGroup/SSIS error)
+If you see an error like **"Loader No SSIS_tableConfig setup db"**, you're usually running an old loader path that expects a legacy config table (`SSIS_tableConfig`) that is not present.
+
+Use this checklist:
+
+1. **Confirm you are in the correct database context.**
+   ```sql
+   SELECT DB_NAME() AS current_db;
+   -- Expected: TenDataWarehouse (or TEN_DATAWAREHOUSE, depending on naming)
+   ```
+
+2. **Run the modern setup script first.**
+   Execute `dhango_agent_jobscript13.sql` in full before calling the proc. This script creates the required `django` schema, tracking tables, and destination tables, and it does **not** require `SSIS_tableConfig`.
+
+3. **Run the new procedure (not the old SSIS orchestration).**
+   ```sql
+   EXEC django.usp_Download_And_Load_S3_Files;
+   ```
+
+4. **Validate required objects exist.**
+   ```sql
+   SELECT OBJECT_ID('django.usp_Download_And_Load_S3_Files','P') AS proc_id,
+          OBJECT_ID('django.S3_Download_Tracking','U')          AS download_tracking_id,
+          OBJECT_ID('django.S3_Load_Tracking','U')              AS load_tracking_id;
+   ```
+
+5. **If you must run legacy SSIS code**, create/populate `SSIS_tableConfig` per that legacy package's expectations, or migrate that job step to use `django.usp_Download_And_Load_S3_Files`.
