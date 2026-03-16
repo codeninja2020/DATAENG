@@ -53,6 +53,34 @@ IF COL_LENGTH('dbo.SSIS_tableConfig', 'ServerId') IS NULL
     ALTER TABLE dbo.SSIS_tableConfig ADD ServerId INT NULL;
 GO
 
+/* 4c) Ensure legacy server config exists (needed by some TenGroupFileLoader variants) */
+IF OBJECT_ID('dbo.SSIS_ServerConfig', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.SSIS_ServerConfig
+    (
+        ServerId        INT            NOT NULL,
+        ServerName      NVARCHAR(128)  NULL,
+        DatabaseName    NVARCHAR(128)  NULL,
+        IsActive        BIT            NOT NULL DEFAULT (1),
+        CONSTRAINT PK_SSIS_ServerConfig PRIMARY KEY (ServerId)
+    );
+END;
+GO
+
+/* 4d) Seed default server config row for ServerId = 1 if missing */
+IF NOT EXISTS (SELECT 1 FROM dbo.SSIS_ServerConfig WHERE ServerId = 1)
+BEGIN
+    INSERT INTO dbo.SSIS_ServerConfig (ServerId, ServerName, DatabaseName, IsActive)
+    VALUES (1, @@SERVERNAME, DB_NAME(), 1);
+END;
+GO
+
+/* 4e) Show SSIS_ServerConfig contents */
+SELECT ServerId, ServerName, DatabaseName, IsActive
+FROM dbo.SSIS_ServerConfig
+ORDER BY ServerId;
+GO
+
 /* 5) Show expected columns vs actual columns to quickly detect mismatch */
 SELECT c.name, t.name AS type_name, c.max_length, c.is_nullable
 FROM sys.columns c
