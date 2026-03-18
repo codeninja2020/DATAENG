@@ -1,0 +1,12 @@
+id|email|first_name|last_name|address_line_1|postcode|country|phone|date_joined
+1|john.doe@example.com|John|Doe|123 Main Street|SW1A 1AA|UK|+44 20 7946 0958|2024-01-15
+2|jane.smith@test.com|Jane|Smith|456 Oak Avenue|M1 1AE|UK|+44 161 123 4567|2024-02-20
+3||Alice|Johnson|789 Elm Road|E1 6AN|UK||2024-03-10
+4|bob.brown@email.com||Brown|321 Pine Lane|W1A 0AX|UK|+44 20 1234 5678|2024-04-05
+5|charlie@example.com|Charlie|Wilson||NW1 6XE|UK|+44 7700 900123|2024-05-12
+6|david.lee@test.com|David|Lee|654 Maple Drive|INVALID|UK|123|2024-06-18
+7|not-an-email|Emily|Taylor|987 Cedar Court|SW3 4TY|UK|+44 20 9876 5432|2024-07-22
+8|frank.miller@example.com|Frank|Miller|147 Birch Street|SE1 9SG|UK|+44 20 3456 7890|2024-08-30
+9|grace.moore@test.com|Grace|Moore|258 Willow Lane|EC1A 1BB|UK|+44 20 8765 4321|2024-09-14
+10|henry.davis@email.com|Henry|Davis|369 Spruce Avenue|WC2N 5DU||+44 20 2345 6789|2024-10-25
+
