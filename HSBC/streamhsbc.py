@@ -2,6 +2,7 @@ import csv
 import pandas as pd
 import datetime
 import os
+import time
 from typing import Dict, List, Tuple, Any
 
 # Import validation configurations
@@ -20,7 +21,7 @@ except ImportError:
         'address_line_1': {'required': True, 'not_null': True, 'data_type': 'str'},
     }
 
-file_path = 'member_details.txt'
+file_path =  'million_details.txt' #'member_details.txt'
 
 def validate_row(row: pd.Series, row_index: int, validation_rules: Dict) -> Tuple[bool, List[str]]:
     """
@@ -137,6 +138,12 @@ def read_txt_with_delimiter(filename, delimiter):
 
 
 if __name__ == '__main__':
+    # Start timing
+    script_start_time = time.time()
+    print(f"{'='*60}")
+    print(f"Starting validation at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"{'='*60}")
+
     # Check if file exists
     if not os.path.exists(file_path):
         print(f"Warning: {file_path} not found. Create sample file first.")
@@ -150,6 +157,8 @@ if __name__ == '__main__':
     all_errors = []
 
     for i, chunk in enumerate(df_iterator):
+        chunk_start_time = time.time()
+
         print(f"\n{'='*60}")
         print(f"Processing chunk {i+1}, shape: {chunk.shape}")
         print(f"{'='*60}")
@@ -209,7 +218,13 @@ if __name__ == '__main__':
         total_invalid += validation_results['invalid_rows']
         all_errors.extend(validation_results['errors'])
 
+        # Chunk timing
+        chunk_elapsed = time.time() - chunk_start_time
+        print(f"\n⏱️  Chunk {i+1} processing time: {chunk_elapsed:.2f} seconds ({len(chunk)/chunk_elapsed:.0f} rows/sec)")
+
     # Final summary
+    script_elapsed_time = time.time() - script_start_time
+
     print(f"\n{'='*60}")
     print(f"VALIDATION SUMMARY")
     print(f"{'='*60}")
@@ -225,4 +240,16 @@ if __name__ == '__main__':
             f.write('\n'.join(all_errors))
         print(f"Complete error log saved to {error_log}")
 
+    # Performance metrics
+    total_rows = total_valid + total_invalid
+    print(f"\n{'='*60}")
+    print(f"PERFORMANCE METRICS")
+    print(f"{'='*60}")
+    print(f"Total processing time: {script_elapsed_time:.2f} seconds ({script_elapsed_time/60:.2f} minutes)")
+    print(f"Total rows processed: {total_rows:,}")
+    if script_elapsed_time > 0:
+        print(f"Processing speed: {total_rows/script_elapsed_time:.0f} rows/second")
+        print(f"Average time per row: {(script_elapsed_time/total_rows)*1000:.2f} milliseconds")
+    print(f"Completed at: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"{'='*60}\n")
 

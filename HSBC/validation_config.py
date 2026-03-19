@@ -36,23 +36,21 @@ def validate_phone(value: Any) -> bool:
 
 # Define validation rules for member_details
 MEMBER_DETAILS_VALIDATION = {
-    # Primary key field
-    'id': {
-        'required': True,
-        'not_null': True,
-        'data_type': 'int',
-        'description': 'Unique member identifier'
-    },
-
-    # Email field
-    'email': {
+    # Primary key field - CIN (Customer Identification Number)
+    'CIN': {
         'required': True,
         'not_null': True,
         'data_type': 'str',
-        'min_length': 5,
-        'max_length': 254,
-        'custom_validator': validate_email,
-        'description': 'Valid email address'
+        'min_length': 1,
+        'description': 'Customer Identification Number (unique member identifier)'
+    },
+
+    # Segment field
+    'Segment': {
+        'required': True,
+        'not_null': True,
+        'data_type': 'str',
+        'description': 'Member segment'
     },
 
     # Name fields
@@ -79,52 +77,67 @@ MEMBER_DETAILS_VALIDATION = {
         'required': True,
         'not_null': True,
         'data_type': 'str',
-        'min_length': 3,
+        'min_length': 1,
         'max_length': 500,
         'description': 'Primary address line'
     },
 
-    'postcode': {
+    'post_code': {
         'required': False,
         'not_null': False,
         'data_type': 'str',
         'max_length': 20,
-        'custom_validator': validate_postcode,
-        'description': 'UK postcode'
+        'description': 'Postal code'
     },
 
-    'country': {
-        'required': True,
-        'not_null': True,
-        'data_type': 'str',
-        'min_length': 2,
-        'description': 'Country name or code'
-    },
-
-    # Optional fields with constraints
-    'phone': {
+    'country_code': {
         'required': False,
         'not_null': False,
         'data_type': 'str',
-        'custom_validator': validate_phone,
-        'description': 'Phone number'
+        'max_length': 10,
+        'description': 'Country code'
     },
 
-    'date_joined': {
+    # Optional fields
+    'email_address': {
         'required': False,
         'not_null': False,
-        'data_type': 'date',
-        'description': 'Member join date'
+        'data_type': 'str',
+        'min_length': 5,
+        'max_length': 254,
+        'custom_validator': validate_email,
+        'description': 'Valid email address'
+    },
+
+    'date_of_birth': {
+        'required': False,
+        'not_null': False,
+        'data_type': 'str',
+        'description': 'Member date of birth'
+    },
+
+    'title_code': {
+        'required': False,
+        'not_null': False,
+        'data_type': 'str',
+        'description': 'Title code (Mr, Mrs, etc.)'
+    },
+
+    'gender_code': {
+        'required': False,
+        'not_null': False,
+        'data_type': 'str',
+        'description': 'Gender code'
     },
 }
 
 
 # Alternative: Minimal validation (adjust based on actual fields in your file)
 MINIMAL_VALIDATION = {
-    'id': {'required': True, 'not_null': True, 'data_type': 'int'},
-    'email': {'required': True, 'not_null': True, 'data_type': 'str', 'min_length': 5},
+    'CIN': {'required': True, 'not_null': True, 'data_type': 'str'},
+    #'Segment': {'required': True, 'not_null': True, 'data_type': 'str'},
     'first_name': {'required': True, 'not_null': True, 'data_type': 'str'},
     'last_name': {'required': True, 'not_null': True, 'data_type': 'str'},
-    'address_line_1': {'required': True, 'not_null': True, 'data_type': 'str'},
+    #'address_line_1': {'required': True, 'not_null': True, 'data_type': 'str'},
 }
 
