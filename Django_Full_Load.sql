@@ -14,7 +14,7 @@ BEGIN
     SET XACT_ABORT ON;
 
     DECLARE @run_id UNIQUEIDENTIFIER = NEWID();
-    DECLARE @DoDownload BIT = 0; -- set to 1 to download from S3, 0 to use existing local files
+    DECLARE @DoDownload BIT = 1; -- set to 1 to download from S3, 0 to use existing local files
 
     DECLARE @baseS3Prefix NVARCHAR(300) =
         'arn:aws:s3:::bi-staging.tenproduct.com/BE_DJANGO_POSTGRES_CSV/TP_20260209220038/';

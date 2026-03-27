@@ -1,36 +1,109 @@
-from twilio.rest import Client
 import os
-from fastapi import Request
+from typing import Dict, Optional
+from urllib.parse import urlencode
+from fastapi import FastAPI, Request
 from fastapi.responses import Response
+from twilio.rest import Client
 from elevenlabs import ElevenLabs
+from env_utils import load_dotenv, require_env
+
+# Load local .env if present so users can run without exporting variables manually.
+load_dotenv()
+
+_env = require_env(
+    [
+        "TWILIO_ACCOUNT_SID",
+        "TWILIO_AUTH_TOKEN",
+        "TWILIO_PHONE_NUMBER",
+        "ELEVENLABS_AGENT_ID",
+    ]
+)
+
+# Required configuration
+TWILIO_ACCOUNT_SID = _env["TWILIO_ACCOUNT_SID"]
+TWILIO_AUTH_TOKEN = _env["TWILIO_AUTH_TOKEN"]
+TWILIO_PHONE_NUMBER = _env["TWILIO_PHONE_NUMBER"]
+AGENT_ID = _env["ELEVENLABS_AGENT_ID"]
+WEBHOOK_BASE_URL = os.getenv("WEBHOOK_BASE_URL", "http://localhost:8000")
 
 # Initialize clients
 twilio_client = Client(
-    os.getenv("TWILIO_ACCOUNT_SID"),
-    os.getenv("TWILIO_AUTH_TOKEN")
+    TWILIO_ACCOUNT_SID,
+    TWILIO_AUTH_TOKEN,
 )
-elevenlabs = ElevenLabs()
-AGENT_ID = os.getenv("ELEVENLABS_AGENT_ID")
+elevenlabs = ElevenLabs()  # Picks up ELEVENLABS_API_KEY from environment
+app = FastAPI()
 
-def initiate_outbound_call(to_number: str):
+def initiate_outbound_call(
+    to_number: str, call_info: Optional[Dict[str, str]] = None
+) -> str:
+    """
+    Kick off an outbound call from your Twilio number. Twilio will request
+    /twilio/outbound on this service once the call is answered.
+    """
+    webhook_url = f"{WEBHOOK_BASE_URL}/twilio/outbound"
+    if call_info:
+        webhook_url = f"{webhook_url}?{urlencode(call_info)}"
+
     call = twilio_client.calls.create(
-        from_=os.getenv("TWILIO_PHONE_NUMBER"),
+        from_=TWILIO_PHONE_NUMBER,
         to=to_number,
-        url="https://your-server.com/twilio/outbound"
+        url=webhook_url,
     )
     return call.sid
 
-@app.post("/twilio/outbound")
-async def handle_outbound_webhook(request: Request):
+@app.post("/twilio/inbound")
+async def handle_inbound_call(request: Request):
+    """
+    Twilio voice webhook for inbound calls; returns TwiML from ElevenLabs.
+    """
     form_data = await request.form()
     from_number = form_data.get("From")
     to_number = form_data.get("To")
+
+    if not from_number or not to_number:
+        return Response(status_code=400, content="Missing From/To in Twilio payload")
+
+    twiml = elevenlabs.conversational_ai.twilio.register_call(
+        agent_id=AGENT_ID,
+        from_number=from_number,
+        to_number=to_number,
+        direction="inbound",
+        conversation_initiation_client_data={
+            "dynamic_variables": {
+                "caller_number": from_number,
+            }
+        },
+    )
+
+    return Response(content=twiml, media_type="application/xml")
+
+@app.post("/twilio/outbound")
+async def handle_outbound_webhook(request: Request):
+    """
+    Twilio calls this after initiate_outbound_call is invoked.
+    """
+    form_data = await request.form()
+    from_number = form_data.get("From")
+    to_number = form_data.get("To")
+
+    if not from_number or not to_number:
+        return Response(status_code=400, content="Missing From/To in Twilio payload")
+
+    call_info = dict(request.query_params)
+    client_data = {"dynamic_variables": call_info} if call_info else None
 
     twiml = elevenlabs.conversational_ai.twilio.register_call(
         agent_id=AGENT_ID,
         from_number=from_number,
         to_number=to_number,
         direction="outbound",
+        conversation_initiation_client_data=client_data,
     )
 
     return Response(content=twiml, media_type="application/xml")
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", "8000")))
