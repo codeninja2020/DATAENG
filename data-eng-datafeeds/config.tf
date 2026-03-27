@@ -5,6 +5,7 @@ terraform {
     region  = "eu-west-1"
     encrypt = true
 
+
     assume_role = {
       role_arn     = "arn:aws:iam::133824686826:role/terraform-state-rw" // todo: build new role 
       session_name = "terraform-state"
