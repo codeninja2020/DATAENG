@@ -45,8 +45,8 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
 
 # Policy allowing S3 operations (HeadObject and DeleteObject)
 resource "aws_iam_role_policy" "lambda_s3_policy" {
-  name   = "datafeeds-lambda-s3-policy-${terraform.workspace}"
-  role   = aws_iam_role.lambda_s3_archive_role.id
+  name = "datafeeds-lambda-s3-policy-${terraform.workspace}"
+  role = aws_iam_role.lambda_s3_archive_role.id
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -74,14 +74,14 @@ resource "aws_iam_role_policy" "lambda_s3_policy" {
 
 # Lambda function
 resource "aws_lambda_function" "s3_archive" {
-  filename            = data.archive_file.lambda_s3_archive.output_path
-  function_name       = "datafeeds-s3-archive-${terraform.workspace}"
-  role                = aws_iam_role.lambda_s3_archive_role.arn
-  handler             = "lambda_s3_archive.lambda_handler"
-  source_code_hash    = data.archive_file.lambda_s3_archive.output_base64sha256
-  runtime             = "python3.11"
-  timeout             = 60
-  memory_size         = 256
+  filename         = data.archive_file.lambda_s3_archive.output_path
+  function_name    = "datafeeds-s3-archive-${terraform.workspace}"
+  role             = aws_iam_role.lambda_s3_archive_role.arn
+  handler          = "lambda_s3_archive.lambda_handler"
+  source_code_hash = data.archive_file.lambda_s3_archive.output_base64sha256
+  runtime          = "python3.11"
+  timeout          = 60
+  memory_size      = 256
 
   environment {
     variables = {
