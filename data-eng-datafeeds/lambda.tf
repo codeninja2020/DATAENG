@@ -8,9 +8,17 @@ data "archive_file" "lambda_s3_archive" {
   depends_on = []
 }
 
+locals {
+  # Using the single bucket defined in locals.tf for both source (event) and target (deletion) paths.
+  source_bucket_name = local.workspace.s3_bucket_name
+  target_bucket_name = local.workspace.s3_bucket_name
+  source_bucket_arn  = "arn:aws:s3:::${local.source_bucket_name}"
+  target_bucket_arn  = "arn:aws:s3:::${local.target_bucket_name}"
+}
+
 # IAM role for Lambda function
 resource "aws_iam_role" "lambda_s3_archive_role" {
-  name              = "datafeeds-lambda-s3-archive-${terraform.workspace}"
+  name               = "datafeeds-lambda-s3-archive-${terraform.workspace}"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -49,17 +57,19 @@ resource "aws_iam_role_policy" "lambda_s3_policy" {
           "s3:HeadObject",
           "s3:DeleteObject"
         ]
-        Resource = "${module.target_s3_bucket.bucket_arn}/*"
+        Resource = "${local.target_bucket_arn}/*"
       },
       {
         Effect = "Allow"
         Action = [
           "s3:ListBucket"
         ]
-        Resource = module.target_s3_bucket.bucket_arn
+        Resource = local.target_bucket_arn
       }
     ]
   })
+
+  depends_on = [module.ten_copilot_frontend_s3_bucket]
 }
 
 # Lambda function
@@ -75,7 +85,7 @@ resource "aws_lambda_function" "s3_archive" {
 
   environment {
     variables = {
-      TARGET_BUCKET = module.target_s3_bucket.bucket_id
+      TARGET_BUCKET = local.target_bucket_name
       TARGET_PREFIX = "archive/"
       DELETE_TARGET = "true"
     }
@@ -87,13 +97,14 @@ resource "aws_lambda_function" "s3_archive" {
 
   depends_on = [
     aws_iam_role_policy_attachment.lambda_basic_execution,
-    aws_iam_role_policy.lambda_s3_policy
+    aws_iam_role_policy.lambda_s3_policy,
+    module.ten_copilot_frontend_s3_bucket
   ]
 }
 
 # S3 bucket notification configuration to trigger Lambda on object creation
 resource "aws_s3_bucket_notification" "datafeeds_bucket_notification" {
-  bucket = module.source_s3_bucket.bucket_id
+  bucket = local.source_bucket_name
 
   lambda_function {
     lambda_function_arn = aws_lambda_function.s3_archive.arn
@@ -103,7 +114,10 @@ resource "aws_s3_bucket_notification" "datafeeds_bucket_notification" {
     # filter_suffix       = ".csv"
   }
 
-  depends_on = [aws_lambda_permission.allow_s3_invoke]
+  depends_on = [
+    aws_lambda_permission.allow_s3_invoke,
+    module.ten_copilot_frontend_s3_bucket
+  ]
 }
 
 # Allow S3 to invoke the Lambda function
@@ -112,6 +126,7 @@ resource "aws_lambda_permission" "allow_s3_invoke" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.s3_archive.function_name
   principal     = "s3.amazonaws.com"
-  source_arn    = module.source_s3_bucket.bucket_arn
-}
+  source_arn    = local.source_bucket_arn
 
+  depends_on = [module.ten_copilot_frontend_s3_bucket]
+}
