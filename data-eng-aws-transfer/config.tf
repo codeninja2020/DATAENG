@@ -95,3 +95,19 @@ resource "aws_transfer_user" "ivector_user" {
   ]
 }
 
+# Second managed Transfer user with its own home directory (replace SSH key before use)
+resource "aws_transfer_user" "mercury_hub_user" {
+  server_id = aws_transfer_server.ivector.id
+  user_name = "mercury_hub"
+  role      = aws_iam_role.transfer_access.arn
+
+  home_directory      = "/${local.ivector_bucket_name}/home/mercury_hub"
+  home_directory_type = "PATH"
+
+  ssh_public_key_body = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICdummyReplaceMeForRealKey mercury_hub@example"
+
+  depends_on = [
+    aws_s3_bucket.ivector,
+    aws_iam_role_policy.transfer_s3_policy
+  ]
+}
