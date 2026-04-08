@@ -3,15 +3,20 @@
 locals {
   ivector_bucket_name = "ivector-${terraform.workspace}"
   ivector_bucket_arn  = "arn:aws:s3:::${local.ivector_bucket_name}"
-}
+} NOT NEEDED JUST DO .ARN
 
-resource "aws_s3_bucket" "ivector" {
+
+resource "aws_s3_bucket" "ivector"
+{
+
   bucket        = local.ivector_bucket_name
   force_destroy = false
 
-  tags = {
+  tags =
+  {
     Name = local.ivector_bucket_name
   }
+
 }
 
 resource "aws_s3_bucket_public_access_block" "ivector" {
@@ -23,7 +28,7 @@ resource "aws_s3_bucket_public_access_block" "ivector" {
 }
 
 # Role assumed by AWS Transfer to access S3
-resource "aws_iam_role" "transfer_access" {
+resource "aws_iam_role" "transfer_access" { #IAMROLE IVECTOR PUT
   name = "datafeeds-transfer-ivector-${terraform.workspace}"
 
   assume_role_policy = jsonencode({
@@ -71,7 +76,8 @@ resource "aws_iam_role_policy" "transfer_s3_policy" {
 resource "aws_transfer_server" "ivector" {
   identity_provider_type = "SERVICE_MANAGED"
   protocols              = ["SFTP"]
-  endpoint_type          = "PUBLIC"
+  endpoint_type          = "VPC" #VPC - how is it secured, set the security group to only allow from specific IPs or VPC endpoints
+                                 #SET the subnet IDs to private subnets that have access to the S3 bucket, and ensure the security group allows outbound access to S3 endpoints
 
   tags = {
     Name = "ivector-${terraform.workspace}"
@@ -100,13 +106,10 @@ resource "aws_transfer_user" "mercury_hub_user" {
   server_id = aws_transfer_server.ivector.id
   user_name = "mercury_hub"
   role      = aws_iam_role.transfer_access.arn
-
   home_directory      = "/${local.ivector_bucket_name}/home/mercury_hub"
   home_directory_type = "PATH"
-
   ssh_public_key_body = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICdummyReplaceMeForRealKey mercury_hub@example"
-
-  depends_on = [
+  depends_on = [   #SHOULD BE TO S3 BUCKET BI BUCKET
     aws_s3_bucket.ivector,
     aws_iam_role_policy.transfer_s3_policy
   ]
