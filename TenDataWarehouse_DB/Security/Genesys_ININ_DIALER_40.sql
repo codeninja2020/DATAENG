@@ -1,0 +1,3 @@
+﻿CREATE SCHEMA [Genesys_ININ_DIALER_40]
+    AUTHORIZATION [dbo];
+

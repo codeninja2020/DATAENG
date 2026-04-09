@@ -1,0 +1,28 @@
+﻿CREATE TABLE [TenMAID_Global].[OnlineSync_Members_Archive_Staging] (
+    [BatchId]                       UNIQUEIDENTIFIER NULL,
+    [CountryID]                     NCHAR (2)        NULL,
+    [DateCreated]                   DATETIME         NULL,
+    [DateUpdated]                   DATETIME         NULL,
+    [DOB]                           DATETIME         NULL,
+    [DolphinID]                     VARCHAR (50)     NULL,
+    [Gender]                        CHAR (1)         NULL,
+    [LanguageID]                    NVARCHAR (100)   NULL,
+    [Member_RecordUpdatedDateTime]  DATETIME         NULL,
+    [Member_SentToPlatformDateTime] DATETIME         NULL,
+    [MemberID]                      INT              NULL,
+    [Members_OnlineSync_ID]         INT              NULL,
+    [MembershipStatusID]            INT              NULL,
+    [PreferredContactPhone]         NVARCHAR (200)   NULL,
+    [PreferredTravelLM]             INT              NULL,
+    [PrimaryEmail]                  NVARCHAR (200)   NULL,
+    [PrimaryLM]                     INT              NULL,
+    [RecordRefId]                   UNIQUEIDENTIFIER NULL,
+    [SchemeID]                      INT              NULL,
+    [ServiceLevelTypeId]            INT              NULL,
+    [Status]                        INT              NULL,
+    [TitleId]                       INT              NULL,
+    [UpdatedBy]                     INT              NULL,
+    [SYS_CHANGE_OPERATION]          NVARCHAR (1)     NULL,
+    [SYS_CHANGE_VERSION]            BIGINT           NULL
+);
+

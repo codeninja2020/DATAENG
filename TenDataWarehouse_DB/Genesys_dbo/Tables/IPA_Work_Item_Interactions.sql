@@ -1,0 +1,25 @@
+﻿CREATE TABLE [Genesys_dbo].[IPA_Work_Item_Interactions] (
+    [AppSegmentID]             SMALLINT         NOT NULL,
+    [CallID]                   CHAR (10)        NOT NULL,
+    [CallIDKey]                CHAR (18)        NOT NULL,
+    [CompleteReason]           INT              NOT NULL,
+    [ConnectedDurationSeconds] INT              NULL,
+    [ConnectedUser]            NVARCHAR (50)    NULL,
+    [DestinationQueueHandling] SMALLINT         NOT NULL,
+    [DestinationQueueID]       NVARCHAR (1024)  NOT NULL,
+    [DestinationQueueType]     SMALLINT         NOT NULL,
+    [HeldDurationSeconds]      INT              NULL,
+    [PickupDate]               DATETIME2 (7)    NULL,
+    [PickupDateOffset]         INT              NULL,
+    [Priority]                 SMALLINT         NULL,
+    [SegmentEndDate]           DATETIME2 (7)    NULL,
+    [SegmentEndDateOffset]     INT              NULL,
+    [SegmentStartDate]         DATETIME2 (7)    NOT NULL,
+    [SegmentStartDateOffset]   INT              NOT NULL,
+    [TransferUserID]           NVARCHAR (50)    NULL,
+    [UsesSkills]               NVARCHAR (512)   NULL,
+    [Version]                  INT              NOT NULL,
+    [WorkItemExecID]           UNIQUEIDENTIFIER NOT NULL,
+    CONSTRAINT [PK_Genesys_dbo_IPA_Work_Item_Interactions] PRIMARY KEY CLUSTERED ([AppSegmentID] ASC, [CallIDKey] ASC, [WorkItemExecID] ASC)
+);
+

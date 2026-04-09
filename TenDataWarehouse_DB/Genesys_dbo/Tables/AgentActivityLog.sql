@@ -1,0 +1,25 @@
+﻿CREATE TABLE [Genesys_dbo].[AgentActivityLog] (
+    [AgentActivityLogId] BIGINT        IDENTITY (1, 1) NOT NULL,
+    [AcdLoggedIn]        SMALLINT      NULL,
+    [ChangedAcdLoggedIn] SMALLINT      NULL,
+    [ChangedLoggedIn]    SMALLINT      NULL,
+    [ChangedStatus]      SMALLINT      NULL,
+    [ChangedStatusGroup] SMALLINT      NULL,
+    [EndDateTime]        DATETIME      NULL,
+    [EndDateTimeGMT]     DATETIME      NOT NULL,
+    [I3TimeStampGMT]     DATETIME      NOT NULL,
+    [LoggedIn]           SMALLINT      NULL,
+    [SeqNo]              SMALLINT      NOT NULL,
+    [SiteId]             SMALLINT      NULL,
+    [StateDuration]      INT           NOT NULL,
+    [StatusAcw]          SMALLINT      NULL,
+    [StatusDateTime]     DATETIME      NULL,
+    [StatusDateTimeGMT]  DATETIME      NOT NULL,
+    [StatusDnd]          SMALLINT      NULL,
+    [StatusGroup]        NVARCHAR (50) NOT NULL,
+    [StatusKey]          NVARCHAR (50) NOT NULL,
+    [SubSiteId]          SMALLINT      NULL,
+    [UserId]             NVARCHAR (50) NULL,
+    CONSTRAINT [PK_Genesys_dbo_AgentActivityLog_AgentActivityLogId] PRIMARY KEY CLUSTERED ([AgentActivityLogId] ASC)
+);
+

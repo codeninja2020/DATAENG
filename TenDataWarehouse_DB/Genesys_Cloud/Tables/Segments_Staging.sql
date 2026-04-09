@@ -1,0 +1,27 @@
+﻿CREATE TABLE [Genesys_Cloud].[Segments_Staging] (
+    [RowId]                     BIGINT         NOT NULL,
+    [segmentStart]              DATETIME       NULL,
+    [segmentEnd]                DATETIME       NULL,
+    [queueId]                   NVARCHAR (MAX) NULL,
+    [wrapUpCode]                NVARCHAR (MAX) NULL,
+    [wrapUpNote]                NVARCHAR (MAX) NULL,
+    [errorCode]                 NVARCHAR (MAX) NULL,
+    [disconnectType]            NVARCHAR (MAX) NULL,
+    [segmentType]               NVARCHAR (MAX) NULL,
+    [requestedLanguageId]       NVARCHAR (MAX) NULL,
+    [sourceConversationId]      NVARCHAR (MAX) NULL,
+    [destinationConversationId] NVARCHAR (MAX) NULL,
+    [sourceSessionId]           NVARCHAR (MAX) NULL,
+    [destinationSessionId]      NVARCHAR (MAX) NULL,
+    [conference]                BIT            NULL,
+    [groupId]                   NVARCHAR (MAX) NULL,
+    [subject]                   NVARCHAR (MAX) NULL,
+    [audioMuted]                BIT            NULL,
+    [videoMuted]                BIT            NULL,
+    [Session_RowId]             BIGINT         NULL,
+    [InsertedOn]                DATETIME       DEFAULT (getdate()) NULL,
+    [SYS_CHANGE_OPERATION]      NVARCHAR (1)   NULL,
+    [SYS_CHANGE_VERSION]        BIGINT         NULL,
+    CONSTRAINT [PK_Genesys_Cloud.Segments_Staging] PRIMARY KEY CLUSTERED ([RowId] ASC)
+);
+

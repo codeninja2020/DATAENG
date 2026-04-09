@@ -1,0 +1,3 @@
+﻿CREATE SCHEMA [PSP_REF]
+    AUTHORIZATION [dbo];
+

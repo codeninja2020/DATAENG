@@ -1,0 +1,27 @@
+﻿CREATE TABLE [RedShift_ten_production].[user_activated] (
+    [id]                      NVARCHAR (512) NULL,
+    [received_at]             DATETIME2 (7)  NULL,
+    [uuid]                    BIGINT         NULL,
+    [context_library_version] NVARCHAR (512) NULL,
+    [context_user_agent]      NVARCHAR (512) NULL,
+    [original_timestamp]      DATETIME2 (7)  NULL,
+    [context_ip]              NVARCHAR (512) NULL,
+    [context_library_name]    NVARCHAR (512) NULL,
+    [context_page_path]       NVARCHAR (512) NULL,
+    [uuid_ts]                 DATETIME2 (7)  NULL,
+    [anonymous_id]            NVARCHAR (512) NULL,
+    [context_page_title]      NVARCHAR (512) NULL,
+    [event_text]              NVARCHAR (512) NULL,
+    [token]                   NVARCHAR (512) NULL,
+    [context_page_url]        NVARCHAR (512) NULL,
+    [event]                   NVARCHAR (512) NULL,
+    [opt_in_ten_field_name]   NVARCHAR (512) NULL,
+    [opt_in_ten_value]        VARCHAR (5)    NULL,
+    [sent_at]                 DATETIME2 (7)  NULL,
+    [timestamp]               DATETIME2 (7)  NULL,
+    [user_id]                 NVARCHAR (512) NULL,
+    [context_page_referrer]   NVARCHAR (512) NULL,
+    [user_activatedId]        BIGINT         IDENTITY (1, 1) NOT NULL,
+    CONSTRAINT [PK_RedShift_ten_production_user_activatedId] PRIMARY KEY CLUSTERED ([user_activatedId] ASC)
+);
+

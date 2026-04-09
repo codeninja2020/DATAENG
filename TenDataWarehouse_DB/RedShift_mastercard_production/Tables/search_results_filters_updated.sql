@@ -1,0 +1,27 @@
+﻿CREATE TABLE [RedShift_mastercard_production].[search_results_filters_updated] (
+    [id]                               NVARCHAR (1000) NULL,
+    [received_at]                      DATETIME2 (7)   NULL,
+    [uuid]                             BIGINT          NULL,
+    [context_page_path]                NVARCHAR (1000) NULL,
+    [context_user_agent]               NVARCHAR (1000) NULL,
+    [uuid_ts]                          DATETIME2 (7)   NULL,
+    [anonymous_id]                     NVARCHAR (1000) NULL,
+    [context_library_version]          NVARCHAR (1000) NULL,
+    [context_page_url]                 NVARCHAR (1000) NULL,
+    [event_text]                       NVARCHAR (1000) NULL,
+    [event]                            NVARCHAR (1000) NULL,
+    [filters]                          NVARCHAR (1000) NULL,
+    [module]                           NVARCHAR (1000) NULL,
+    [original_timestamp]               DATETIME2 (7)   NULL,
+    [sent_at]                          DATETIME2 (7)   NULL,
+    [context_ip]                       NVARCHAR (1000) NULL,
+    [context_library_name]             NVARCHAR (1000) NULL,
+    [context_page_title]               NVARCHAR (1000) NULL,
+    [timestamp]                        DATETIME2 (7)   NULL,
+    [user_id]                          NVARCHAR (4000) NULL,
+    [context_page_referrer]            NVARCHAR (1000) NULL,
+    [context_page_search]              NVARCHAR (1000) NULL,
+    [search_results_filters_updatedId] BIGINT          IDENTITY (1, 1) NOT NULL,
+    CONSTRAINT [PK_RedShift_mastercard_production_search_results_filters_updatedId] PRIMARY KEY CLUSTERED ([search_results_filters_updatedId] ASC)
+);
+

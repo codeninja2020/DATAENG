@@ -1,0 +1,27 @@
+﻿CREATE TABLE [Genesys_dbo].[IO_TimeOffRequest] (
+    [ActivityCodeID]       CHAR (22)       NULL,
+    [AgentID]              CHAR (22)       NOT NULL,
+    [DenyReason]           INT             NULL,
+    [Description]          NVARCHAR (2000) NULL,
+    [EndDateTimeUTC]       DATETIME        NOT NULL,
+    [FullDayStartDate]     DATETIME        NULL,
+    [IsAutoApproved]       TINYINT         NOT NULL,
+    [Length]               INT             NOT NULL,
+    [ModifierUserID]       NVARCHAR (100)  NULL,
+    [ModifyDateTimeUTC]    DATETIME        NULL,
+    [NumberOfDays]         INT             NULL,
+    [PaidTime]             TINYINT         NOT NULL,
+    [RequestState]         INT             NOT NULL,
+    [RequestType]          INT             NOT NULL,
+    [ReviewedDateTimeUTC]  DATETIME        NULL,
+    [ReviewerUserID]       NVARCHAR (100)  NULL,
+    [SchedulingUnitID]     CHAR (22)       NOT NULL,
+    [StartDateTimeUTC]     DATETIME        NOT NULL,
+    [SubmittedDateTimeUTC] DATETIME        NULL,
+    [SubmitterUserID]      NVARCHAR (100)  NULL,
+    [TimeOffRequestID]     CHAR (22)       NOT NULL,
+    [Version]              INT             NOT NULL,
+    [WaitlistReason]       INT             NULL,
+    CONSTRAINT [PK_Genesys_dbo_IO_TimeOffRequest] PRIMARY KEY CLUSTERED ([TimeOffRequestID] ASC)
+);
+

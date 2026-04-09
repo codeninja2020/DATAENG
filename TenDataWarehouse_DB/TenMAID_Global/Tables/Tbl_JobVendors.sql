@@ -1,0 +1,49 @@
+﻿CREATE TABLE [TenMAID_Global].[Tbl_JobVendors] (
+    [ActualCommission]          MONEY          NULL,
+    [ActualCost]                MONEY          NULL,
+    [BookingRefNo]              NVARCHAR (200) NULL,
+    [BranchID]                  INT            NULL,
+    [CardType]                  INT            NULL,
+    [Certainty]                 INT            NULL,
+    [ChargeInvoice]             BIT            NULL,
+    [ChaseCount]                INT            NULL,
+    [Commission]                MONEY          NULL,
+    [Commission_ISO_CurrencyID] NCHAR (6)      NULL,
+    [CommissionDue]             BIT            NULL,
+    [CommissionPercentage]      FLOAT (53)     NULL,
+    [CommissionValue]           MONEY          NULL,
+    [Cost]                      MONEY          NOT NULL,
+    [Cost_ISO_CurrencyID]       NVARCHAR (6)   NULL,
+    [Disputed]                  BIT            NULL,
+    [DisputeTrackID]            INT            NULL,
+    [EstBookingValue]           INT            NULL,
+    [EstSupRevenue]             INT            NULL,
+    [ExpiryDate]                DATETIME       NULL,
+    [HaveCommission]            SMALLINT       NULL,
+    [InNewInvoice]              BIT            NULL,
+    [InvoiceAttached]           BIT            NULL,
+    [InvoiceComplete]           BIT            NULL,
+    [IsInformation]             BIT            NULL,
+    [IsSelected]                BIT            NULL,
+    [JobDescription]            NVARCHAR (250) NULL,
+    [JobID]                     INT            NOT NULL,
+    [JobVendorsID]              INT            NOT NULL,
+    [LastChaseDate]             DATETIME       NULL,
+    [MemberPaid]                BIT            NULL,
+    [NoOfBooking]               INT            NULL,
+    [PayImmediately]            BIT            NULL,
+    [PaymentProbID]             INT            NULL,
+    [PaymentProcID]             INT            NULL,
+    [RaisedInvoice]             BIT            NULL,
+    [Used]                      BIT            NULL,
+    [VAT]                       BIT            NULL,
+    [VendorID]                  INT            NOT NULL,
+    CONSTRAINT [PK_TenMAID_Global_Tbl_JobVendors] PRIMARY KEY CLUSTERED ([JobVendorsID] ASC)
+);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_JobID_INC]
+    ON [TenMAID_Global].[Tbl_JobVendors]([JobID] ASC)
+    INCLUDE([BookingRefNo]);
+

@@ -1,0 +1,28 @@
+﻿CREATE TABLE [TenMAID_Global].[Tbl_MemberPropertyDetails] (
+    [MembershipID]         INT             NOT NULL,
+    [MemberID]             INT             NULL,
+    [MemberAddressTypeID]  INT             NULL,
+    [OwnershipStatus]      INT             NULL,
+    [NumberOfBedrooms]     INT             NULL,
+    [NumberOfBathrooms]    INT             NULL,
+    [Garden]               CHAR (1)        NULL,
+    [RegularGardener]      CHAR (1)        NULL,
+    [GardenerStartDate]    DATETIME        NULL,
+    [GardenerSourcedByTen] BIT             NULL,
+    [GardenersVendorID]    INT             NULL,
+    [RegularCleaner]       CHAR (1)        NULL,
+    [CleanerStartDate]     DATETIME        NULL,
+    [CleanerSourcedByTen]  BIT             NULL,
+    [CleanersVendorID]     INT             NULL,
+    [Nanny]                CHAR (1)        NULL,
+    [AccessParking]        NVARCHAR (2000) NULL,
+    [DateCreated]          DATETIME        NULL,
+    [DateUpdated]          DATETIME        NULL,
+    [CreatedBy]            INT             NULL,
+    [UpdatedBy]            INT             NULL,
+    [TypeOfProperty]       INT             NULL,
+    [PropertyAgeStatus]    INT             NULL,
+    [OtherTypeOfProperty]  VARCHAR (100)   NULL,
+    CONSTRAINT [PK_Tbl_MemberPropertyDetails] PRIMARY KEY CLUSTERED ([MembershipID] ASC)
+);
+

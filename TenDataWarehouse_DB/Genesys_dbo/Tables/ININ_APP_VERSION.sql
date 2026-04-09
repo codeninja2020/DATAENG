@@ -1,0 +1,14 @@
+﻿CREATE TABLE [Genesys_dbo].[ININ_APP_VERSION] (
+    [ActCkSum]       INT          NULL,
+    [MAJOR_VER_NO]   INT          NOT NULL,
+    [MINOR_VER_NO]   INT          NOT NULL,
+    [PRODUCT]        VARCHAR (20) NOT NULL,
+    [ReqCkSum]       INT          NULL,
+    [SCHEMA_UPDATED] DATETIME     NOT NULL,
+    [SERVICE_VER_NO] VARCHAR (20) NULL,
+    [SUB_VER_NO]     INT          NOT NULL,
+    [UPDATE_STATUS]  VARCHAR (20) NOT NULL,
+    [UPDATE_TYPE]    VARCHAR (20) NOT NULL,
+    CONSTRAINT [PK_Genesys_dbo_ININ_APP_VERSION] PRIMARY KEY CLUSTERED ([SCHEMA_UPDATED] ASC)
+);
+

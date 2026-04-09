@@ -1,0 +1,3 @@
+﻿CREATE LOGIN [TENUK\DB_LDCSQLPD22_TenDataWarehouse_Internal_Access]
+    FROM WINDOWS WITH DEFAULT_LANGUAGE = [us_english];
+

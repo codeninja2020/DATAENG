@@ -1,0 +1,27 @@
+﻿CREATE TABLE [RedShift_scotia_evasion].[custom_request_submitted] (
+    [id]                         NVARCHAR (512) NULL,
+    [received_at]                DATETIME2 (7)  NULL,
+    [uuid]                       BIGINT         NULL,
+    [context_library_name]       NVARCHAR (512) NULL,
+    [context_page_path]          NVARCHAR (512) NULL,
+    [context_page_title]         NVARCHAR (512) NULL,
+    [context_page_url]           NVARCHAR (512) NULL,
+    [custom_request_type]        NVARCHAR (512) NULL,
+    [sent_at]                    DATETIME2 (7)  NULL,
+    [user_id]                    NVARCHAR (512) NULL,
+    [context_user_agent]         NVARCHAR (512) NULL,
+    [custom_request_date]        DATETIME2 (7)  NULL,
+    [event]                      NVARCHAR (512) NULL,
+    [event_text]                 NVARCHAR (512) NULL,
+    [original_timestamp]         DATETIME2 (7)  NULL,
+    [timestamp]                  DATETIME2 (7)  NULL,
+    [context_page_referrer]      NVARCHAR (512) NULL,
+    [anonymous_id]               NVARCHAR (512) NULL,
+    [context_ip]                 NVARCHAR (512) NULL,
+    [context_library_version]    NVARCHAR (512) NULL,
+    [uuid_ts]                    DATETIME2 (7)  NULL,
+    [context_page_search]        NVARCHAR (512) NULL,
+    [custom_request_submittedId] BIGINT         IDENTITY (1, 1) NOT NULL,
+    CONSTRAINT [PK_RedShift_scotia_evasion_custom_request_submittedId] PRIMARY KEY CLUSTERED ([custom_request_submittedId] ASC)
+);
+

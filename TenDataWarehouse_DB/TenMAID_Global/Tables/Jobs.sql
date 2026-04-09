@@ -1,0 +1,143 @@
+﻿CREATE TABLE [TenMAID_Global].[Jobs] (
+    [ActualTimeOfRequest]   DATETIME        NULL,
+    [ActualValue]           MONEY           NULL,
+    [AmadeusPNR]            NVARCHAR (50)   NULL,
+    [AttachedWithJob]       VARCHAR (100)   NULL,
+    [BookedFor]             NVARCHAR (50)   NULL,
+    [BriefDate]             DATETIME        NULL,
+    [BriefMethodID]         SMALLINT        NULL,
+    [BriefOriginal]         NVARCHAR (4000) NULL,
+    [CategoryID]            INT             NULL,
+    [CategoryStepSum]       INT             NULL,
+    [ClosedBy]              INT             NULL,
+    [ClosedByEmpHistoryID]  INT             NULL,
+    [ClosedDate]            DATETIME        NULL,
+    [CloseDetails]          NVARCHAR (256)  NULL,
+    [ClosedFor]             INT             NULL,
+    [ClosedForEmpHistoryID] INT             NULL,
+    [CloseInfo]             SMALLINT        NULL,
+    [CompletionBarValue]    INT             NULL,
+    [ContactMethodID]       INT             NULL,
+    [ContactMethodText]     NVARCHAR (50)   NULL,
+    [CreatedBy]             INT             NULL,
+    [CreatedByEmpHistoryID] INT             NULL,
+    [CurrencyID]            INT             NULL,
+    [CurrentOutcomeCodeId]  INT             NULL,
+    [DateInMonth]           INT             NULL,
+    [DayOfRequest]          SMALLINT        NULL,
+    [DayOfWeek]             INT             NULL,
+    [DolphinFolderID]       NVARCHAR (50)   NULL,
+    [DueDate]               DATETIME        NULL,
+    [emplyeeteam_close]     INT             NULL,
+    [emplyeeteam_create]    INT             NULL,
+    [EndDate]               DATETIME        NULL,
+    [EventDate]             DATETIME        NULL,
+    [FeeID]                 INT             NULL,
+    [Finished]              INT             NULL,
+    [FirstRespondDateTime]  DATETIME        NULL,
+    [ForeignJobID]          INT             NULL,
+    [ImportantID]           INT             NULL,
+    [InitialDueDate]        DATETIME        NULL,
+    [Interval]              INT             NULL,
+    [IsAdminJob]            BIT             NULL,
+    [isClonedFromUS]        BIT             NULL,
+    [IsFlightPlus]          BIT             NULL,
+    [IsFollowUpJob]         BIT             NULL,
+    [IsItConfidential]      BIT             NULL,
+    [IsLongResearch]        BIT             NULL,
+    [IsOncallResolution]    BIT             NULL,
+    [IsParAnsBrief]         BIT             NULL,
+    [IsProactive]           BIT             NULL,
+    [IsRecurring]           BIT             NULL,
+    [IsReminder]            BIT             NULL,
+    [IsSurprise]            BIT             NULL,
+    [IsTemplateSent]        BIT             NULL,
+    [IsValuable]            BIT             NULL,
+    [IsVendorJob]           BIT             NULL,
+    [JobAppearDate]         DATETIME        NULL,
+    [JobBookingStatus]      INT             NULL,
+    [JobCityID]             INT             NULL,
+    [JobEndDate]            DATETIME        NULL,
+    [JobEndDateOptionID]    SMALLINT        NULL,
+    [JobFee]                MONEY           NULL,
+    [JobID]                 INT             NOT NULL,
+    [JobOwnedBy]            INT             NULL,
+    [JobPriorityID]         SMALLINT        NULL,
+    [JobStartDate]          DATETIME        NULL,
+    [JobStartDateOptionID]  SMALLINT        NULL,
+    [JobStatusID]           INT             NULL,
+    [JobTypeID]             INT             NULL,
+    [JobWorkStatusID]       SMALLINT        NULL,
+    [MasterJobID]           INT             NULL,
+    [MemberFeedback]        NVARCHAR (500)  NULL,
+    [MemberID]              INT             NULL,
+    [Month]                 INT             NULL,
+    [MultipleDays]          NVARCHAR (50)   NULL,
+    [Occur]                 INT             NULL,
+    [Occurrences]           INT             NULL,
+    [OnlineMessageID]       VARCHAR (50)    NULL,
+    [OtherCancelReason]     NVARCHAR (100)  NULL,
+    [ParentJobID]           INT             NULL,
+    [ReasonForCancelID]     SMALLINT        NULL,
+    [RecFinishDate]         DATETIME        NULL,
+    [RecFrequency]          SMALLINT        NULL,
+    [RecurringDate]         DATETIME        NULL,
+    [RecurringRule]         SMALLINT        NULL,
+    [RequestedBy]           SMALLINT        NULL,
+    [RequestFormat]         SMALLINT        NULL,
+    [RequestMappingId]      INT             NULL,
+    [RequestTypeDate]       DATETIME        NULL,
+    [RequestTypeId]         INT             NULL,
+    [SchemeCustomeField]    NVARCHAR (100)  NULL,
+    [SourceJobID]           INT             NULL,
+    [StartDate]             DATETIME        NULL,
+    [Subject]               NVARCHAR (250)  NULL,
+    [SubRequestTypeId]      INT             NULL,
+    [TimeOfRequest]         SMALLINT        NULL,
+    [TimeOfResponseSent]    DATETIME        NULL,
+    [TimeSpentOn]           SMALLINT        NULL,
+    [TimeTaken]             SMALLINT        NULL,
+    [TrafficLightID]        SMALLINT        NULL,
+    [Type]                  NVARCHAR (50)   NULL,
+    [UrgencyID]             INT             NULL,
+    [VendorMatchDate]       DATETIME        NULL,
+    [VertuSelectID]         SMALLINT        NULL,
+    [Year]                  INT             NULL,
+    [IV_BookingRef]         NVARCHAR (500)  NULL,
+    CONSTRAINT [PK_TenMAID_Global_Jobs] PRIMARY KEY CLUSTERED ([JobID] ASC)
+);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_TenMAID_Global_Jobs_MemberID_INC]
+    ON [TenMAID_Global].[Jobs]([MemberID] ASC)
+    INCLUDE([JobID], [BriefDate]);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_IsAdminJob_BriefDate_JobStatusID_INC]
+    ON [TenMAID_Global].[Jobs]([IsAdminJob] ASC, [BriefDate] ASC, [JobStatusID] ASC)
+    INCLUDE([CreatedBy], [IsVendorJob]);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_ClosedDate_BriefDate]
+    ON [TenMAID_Global].[Jobs]([ClosedDate] ASC, [BriefDate] ASC);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_isClonedFromUS_INC]
+    ON [TenMAID_Global].[Jobs]([isClonedFromUS] ASC)
+    INCLUDE([ForeignJobID]);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_Jobs_BriefMethodID]
+    ON [TenMAID_Global].[Jobs]([BriefMethodID] ASC, [BriefDate] ASC)
+    INCLUDE([BriefOriginal], [ClosedBy], [CreatedBy], [JobStatusID], [MemberID], [Subject]);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_ClosedDate_TrafficLightID]
+    ON [TenMAID_Global].[Jobs]([ClosedDate] ASC, [TrafficLightID] ASC);
+

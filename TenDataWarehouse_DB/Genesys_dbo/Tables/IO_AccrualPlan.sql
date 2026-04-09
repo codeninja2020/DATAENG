@@ -1,0 +1,25 @@
+﻿CREATE TABLE [Genesys_dbo].[IO_AccrualPlan] (
+    [AccrualPlanID]                CHAR (22)      NOT NULL,
+    [AccrualPlanName]              NVARCHAR (100) NOT NULL,
+    [AccruedCapDateSUT]            DATETIME       NULL,
+    [AccruedHoursOnDateCap]        NUMERIC (18)   NOT NULL,
+    [AgentsCanRequestTimeOff]      TINYINT        NOT NULL,
+    [AgentsCanSeePlan]             TINYINT        NOT NULL,
+    [AutoApprove]                  TINYINT        NOT NULL,
+    [CapAccruedHoursOnDate]        TINYINT        NOT NULL,
+    [CapMaxAccruedHours]           TINYINT        NOT NULL,
+    [CountsAgainstAllotment]       TINYINT        NOT NULL,
+    [IsActive]                     TINYINT        NOT NULL,
+    [MaxAccruedHoursCap]           NUMERIC (18)   NOT NULL,
+    [ModifierUserID]               NVARCHAR (100) NULL,
+    [ModifyDateTimeUTC]            DATETIME       NULL,
+    [SchedulingUnitID]             CHAR (22)      NOT NULL,
+    [UseAccrualAtSubmissionTime]   TINYINT        NOT NULL,
+    [Version]                      INT            NOT NULL,
+    [WaitlistCapAddCurrentAccrual] TINYINT        NOT NULL,
+    [WaitlistCapAddExtraHours]     TINYINT        NOT NULL,
+    [WaitlistCapAddPlannedAccrual] TINYINT        NOT NULL,
+    [WaitlistCapExtraHours]        NUMERIC (18)   NOT NULL,
+    CONSTRAINT [PK_Genesys_dbo_IO_AccrualPlan] PRIMARY KEY CLUSTERED ([AccrualPlanID] ASC)
+);
+

@@ -1,0 +1,26 @@
+﻿CREATE TABLE [Genesys_dbo].[IO_RTAException] (
+    [AfterActualActivityID]  CHAR (22)       NOT NULL,
+    [AgentID]                CHAR (22)       NOT NULL,
+    [BeforeActualActivityID] CHAR (22)       NOT NULL,
+    [ExceptionType]          TINYINT         NOT NULL,
+    [Excused]                TINYINT         NOT NULL,
+    [ExcusedLength]          INT             NULL,
+    [ModifierUserID]         NVARCHAR (100)  NULL,
+    [ModifyDateTimeUTC]      DATETIME        NULL,
+    [Reason]                 TINYINT         NOT NULL,
+    [ReasonDescription]      NVARCHAR (2000) NULL,
+    [ReviewDateTimeUTC]      DATETIME        NULL,
+    [ReviewerID]             CHAR (22)       NULL,
+    [RTAExceptionID]         CHAR (22)       NOT NULL,
+    [ScheduledActivityID]    CHAR (22)       NOT NULL,
+    [ScheduleID]             CHAR (22)       NOT NULL,
+    [SchedulingUnit]         NVARCHAR (100)  NOT NULL,
+    [SecsOutOfAdherence]     INT             NULL,
+    [Shift]                  NVARCHAR (100)  NULL,
+    [StartDateTime]          DATETIME        NOT NULL,
+    [StartDateTimeUTC]       DATETIME        NOT NULL,
+    [StatusKey]              NVARCHAR (100)  NULL,
+    [Version]                INT             NOT NULL,
+    CONSTRAINT [PK_Genesys_dbo_IO_RTAException] PRIMARY KEY CLUSTERED ([RTAExceptionID] ASC)
+);
+

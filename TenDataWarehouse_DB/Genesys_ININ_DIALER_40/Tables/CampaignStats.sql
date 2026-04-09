@@ -1,0 +1,28 @@
+﻿CREATE TABLE [Genesys_ININ_DIALER_40].[CampaignStats] (
+    [abandonrate]          FLOAT (53)    NULL,
+    [adjcpa]               FLOAT (53)    NULL,
+    [campaignname]         VARCHAR (255) NOT NULL,
+    [campaignstate]        VARCHAR (20)  NOT NULL,
+    [campaignstats_id]     BIGINT        NOT NULL,
+    [cpa]                  FLOAT (53)    NULL,
+    [dialingmode]          VARCHAR (10)  NOT NULL,
+    [dndagents]            INT           NOT NULL,
+    [effectiveidleagents]  FLOAT (53)    NOT NULL,
+    [effectivetotalagents] FLOAT (53)    NOT NULL,
+    [Event]                VARCHAR (20)  NULL,
+    [filtersize]           INT           NOT NULL,
+    [idleagents]           INT           NOT NULL,
+    [nondialeragents]      INT           NOT NULL,
+    [odsoffset]            INT           NOT NULL,
+    [pace]                 INT           NULL,
+    [periodendtimeUTC]     DATETIME      NOT NULL,
+    [periodstarttimeUTC]   DATETIME      NOT NULL,
+    [priority]             TINYINT       NOT NULL,
+    [recyclesize]          INT           NOT NULL,
+    [rulegroupid]          SMALLINT      NULL,
+    [siteid]               VARCHAR (80)  NOT NULL,
+    [totalagents]          INT           NOT NULL,
+    [totaldialercalls]     INT           NOT NULL,
+    CONSTRAINT [PK_Genesys_ININ_DIALER_40_CampaignStats] PRIMARY KEY CLUSTERED ([campaignstats_id] ASC)
+);
+

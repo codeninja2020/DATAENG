@@ -1,0 +1,28 @@
+﻿CREATE TABLE [Genesys_dbo].[InteractionCustomAttributes] (
+    [CustomDateTime]    DATETIME2 (7) NULL,
+    [CustomDateTimeGMT] DATETIME2 (7) NULL,
+    [CustomNum1]        INT           NULL,
+    [CustomNum2]        INT           NULL,
+    [CustomNum3]        INT           NULL,
+    [CustomNum4]        INT           NULL,
+    [CustomNum5]        INT           NULL,
+    [CustomNum6]        INT           NULL,
+    [CustomNum7]        INT           NULL,
+    [CustomNum8]        INT           NULL,
+    [CustomNum9]        INT           NULL,
+    [CustomString1]     NVARCHAR (50) NULL,
+    [CustomString2]     NVARCHAR (50) NULL,
+    [CustomString3]     NVARCHAR (50) NULL,
+    [CustomString4]     NVARCHAR (50) NULL,
+    [CustomString5]     NVARCHAR (50) NULL,
+    [CustomString6]     NVARCHAR (50) NULL,
+    [CustomString7]     NVARCHAR (50) NULL,
+    [CustomString8]     NVARCHAR (50) NULL,
+    [CustomString9]     NVARCHAR (50) NULL,
+    [I3TimeStampGMT]    DATETIME2 (7) NOT NULL,
+    [InteractionIDKey]  CHAR (18)     NOT NULL,
+    [SeqNo]             TINYINT       NOT NULL,
+    [SiteID]            SMALLINT      NOT NULL,
+    CONSTRAINT [PK_Genesys_dbo_InteractionCustomAttributes] PRIMARY KEY CLUSTERED ([InteractionIDKey] ASC, [SeqNo] ASC, [SiteID] ASC)
+);
+

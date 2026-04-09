@@ -1,0 +1,25 @@
+﻿CREATE TABLE [Genesys_dbo].[IR_Event] (
+    [ConnValue]             NVARCHAR (255)   NULL,
+    [DisplayName]           NVARCHAR (255)   NULL,
+    [Duration]              INT              NULL,
+    [EventDate]             DATETIME2 (7)    NOT NULL,
+    [EventDateOffset]       INT              NOT NULL,
+    [EventId]               INT              NOT NULL,
+    [EventType]             SMALLINT         NOT NULL,
+    [IndivId]               CHAR (22)        NULL,
+    [InitiatedFor]          TINYINT          NOT NULL,
+    [Intx_Part_Id]          CHAR (22)        NULL,
+    [IntxId]                CHAR (22)        NULL,
+    [IsInternalParticipant] TINYINT          NOT NULL,
+    [KeywordChannel]        TINYINT          NULL,
+    [KeywordConfidence]     NUMERIC (18)     NULL,
+    [KeywordId]             INT              NULL,
+    [KeywordScore]          SMALLINT         NULL,
+    [KeywordUtterance]      VARCHAR (1024)   NULL,
+    [Notes]                 NVARCHAR (1024)  NULL,
+    [RecordingId]           UNIQUEIDENTIFIER NOT NULL,
+    [Version]               INT              NOT NULL,
+    [Workgroup]             NVARCHAR (255)   NULL,
+    CONSTRAINT [PK_Genesys_dbo_IR_Event] PRIMARY KEY CLUSTERED ([EventId] ASC)
+);
+

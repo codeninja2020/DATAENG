@@ -1,0 +1,27 @@
+﻿CREATE TABLE [Genesys_dbo].[IntxSegment] (
+    [AccountCode]              NVARCHAR (50)   NULL,
+    [AppIncidentID]            NVARCHAR (255)  NULL,
+    [AssignedWorkGroup]        NVARCHAR (50)   NULL,
+    [ConferenceID]             INT             NULL,
+    [Duration]                 INT             NULL,
+    [EmailCC]                  NVARCHAR (200)  NULL,
+    [EmailPriority]            TINYINT         NULL,
+    [EmailSubject]             NVARCHAR (100)  NULL,
+    [IntxDirection]            TINYINT         NOT NULL,
+    [IntxID]                   CHAR (22)       NOT NULL,
+    [IntxInstantiatedDateTime] DATETIME2 (7)   NULL,
+    [IntxSegmentDateOffset]    INT             NULL,
+    [IntxTypeID]               INT             NULL,
+    [IsPrivate]                TINYINT         NULL,
+    [ModifyDateTime]           DATETIME2 (7)   NULL,
+    [NextIntxID]               CHAR (22)       NULL,
+    [PrevIntxID]               CHAR (22)       NULL,
+    [SecLevelActual]           TINYINT         NULL,
+    [SegmentLog]               NVARCHAR (2000) NULL,
+    [SegmentType]              INT             NOT NULL,
+    [SiteID]                   SMALLINT        NULL,
+    [StartDateTime]            DATETIME2 (7)   NOT NULL,
+    [Version]                  INT             NULL,
+    CONSTRAINT [PK_Genesys_dbo_IntxSegment] PRIMARY KEY CLUSTERED ([IntxID] ASC)
+);
+

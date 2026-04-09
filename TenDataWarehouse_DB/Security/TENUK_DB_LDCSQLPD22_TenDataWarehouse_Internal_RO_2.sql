@@ -1,0 +1,3 @@
+﻿CREATE SCHEMA [TENUK\DB_LDCSQLPD22_TenDataWarehouse_Internal_RO]
+    AUTHORIZATION [TENUK\DB_LDCSQLPD22_TenDataWarehouse_Internal_RO];
+

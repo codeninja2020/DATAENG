@@ -1,0 +1,26 @@
+﻿CREATE TABLE [IBMWatson].[RRDE] (
+    [RRDEId]             INT              IDENTITY (1, 1) NOT NULL,
+    [Recipient Id]       NVARCHAR (3000)  NULL,
+    [Recipient Type]     NVARCHAR (1000)  NULL,
+    [Mailing Id]         NVARCHAR (1000)  NULL,
+    [Report Id]          NVARCHAR (1000)  NULL,
+    [Campaign Id]        NVARCHAR (1000)  NULL,
+    [Email]              NVARCHAR (1000)  NULL,
+    [Event Type]         NVARCHAR (1000)  NULL,
+    [Event Timestamp]    NVARCHAR (1000)  NULL,
+    [Body Type]          NVARCHAR (1000)  NULL,
+    [Content Id]         NVARCHAR (1000)  NULL,
+    [Click Name]         NVARCHAR (1000)  NULL,
+    [URL]                NVARCHAR (1000)  NULL,
+    [Conversion Action]  NVARCHAR (1000)  NULL,
+    [Conversion Detail]  NVARCHAR (1000)  NULL,
+    [Conversion Amount]  NVARCHAR (1000)  NULL,
+    [Suppression Reason] NVARCHAR (1000)  NULL,
+    [Mailing Name]       NVARCHAR (1000)  NULL,
+    [Member_ID]          NVARCHAR (1000)  NULL,
+    [Inserted_On]        DATETIME         NULL,
+    [FileName]           NVARCHAR (1000)  NULL,
+    [ProcessId]          UNIQUEIDENTIFIER NULL,
+    CONSTRAINT [PK_IBMWatson_RRDE_RRDEId] PRIMARY KEY CLUSTERED ([RRDEId] ASC)
+);
+

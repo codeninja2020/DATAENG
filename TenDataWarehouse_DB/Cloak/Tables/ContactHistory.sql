@@ -1,0 +1,26 @@
+﻿CREATE TABLE [Cloak].[ContactHistory] (
+    [CHID]                          INT           NOT NULL,
+    [CompletionCodeID]              INT           NULL,
+    [ContactEndTime]                DATETIME      NULL,
+    [DateID]                        INT           NULL,
+    [EndTime]                       DATETIME      NULL,
+    [LastQID]                       INT           NULL,
+    [LastUID]                       INT           NULL,
+    [NumberOfConferences]           INT           NOT NULL,
+    [NumberOfConsults]              INT           NOT NULL,
+    [NumberOfHolds]                 INT           NULL,
+    [NumberOfTransfers]             INT           NULL,
+    [OnHoldTime]                    INT           NULL,
+    [OriginalDTID]                  INT           NULL,
+    [OriginalFromAddr]              VARCHAR (255) NULL,
+    [OriginalQID]                   INT           NULL,
+    [OriginalQueueWithHoldFromAddr] INT           NULL,
+    [OriginalToAddr]                VARCHAR (255) NULL,
+    [Outcome]                       INT           NULL,
+    [StartTime]                     DATETIME      NULL,
+    [TimeID]                        INT           NULL,
+    [TotalDuration]                 INT           NULL,
+    [WhoDisconnected]               INT           NOT NULL,
+    CONSTRAINT [PK_Cloak_ContactHistory_CHID] PRIMARY KEY CLUSTERED ([CHID] ASC)
+);
+

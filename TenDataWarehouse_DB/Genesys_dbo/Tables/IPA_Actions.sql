@@ -1,0 +1,26 @@
+﻿CREATE TABLE [Genesys_dbo].[IPA_Actions] (
+    [ActionExecID]          UNIQUEIDENTIFIER NOT NULL,
+    [ActionID]              UNIQUEIDENTIFIER NOT NULL,
+    [ActionOutput]          NVARCHAR (128)   NULL,
+    [ActionType]            NVARCHAR (128)   NOT NULL,
+    [EndDateTime]           DATETIME         NULL,
+    [EndDateTimeOffset]     INT              NULL,
+    [ErrorDescArgs]         NVARCHAR (1024)  NULL,
+    [ErrorDescID]           INT              NULL,
+    [ErrorDescription]      NVARCHAR (1024)  NULL,
+    [ErrorResolArgs]        NVARCHAR (1024)  NULL,
+    [ErrorResolDesc]        NVARCHAR (1024)  NULL,
+    [ErrorResolID]          INT              NULL,
+    [ExecutorEndDateTime]   DATETIME         NULL,
+    [ExecutorEndDTOffset]   INT              NULL,
+    [ExecutorStartDateTime] DATETIME         NULL,
+    [ExecutorStartDTOffset] INT              NULL,
+    [ParentActionExecID]    UNIQUEIDENTIFIER NULL,
+    [PredecessorActionID]   UNIQUEIDENTIFIER NULL,
+    [StartDateTime]         DATETIME         NOT NULL,
+    [StartDateTimeOffset]   INT              NOT NULL,
+    [Version]               INT              NOT NULL,
+    [XMLResultData]         XML              NULL,
+    CONSTRAINT [PK_Genesys_dbo_IPA_Actions] PRIMARY KEY CLUSTERED ([ActionExecID] ASC)
+);
+

@@ -1,0 +1,27 @@
+﻿CREATE TABLE [TenMAID_US].[Tbl_MemberBenefitCards_Staging] (
+    [AllocatedTo]          INT             NULL,
+    [CategoryID]           INT             NULL,
+    [DateCreated]          DATETIME        NULL,
+    [DateUpdated]          DATETIME        NULL,
+    [EventDate]            DATETIME        NULL,
+    [EventDateTo]          DATETIME        NULL,
+    [IsExpired]            BIT             NULL,
+    [MemberBenefitID]      INT             NOT NULL,
+    [NegotiatedDate]       DATETIME        NULL,
+    [PassionPoint]         INT             NULL,
+    [Program]              INT             NULL,
+    [ranking]              INT             NULL,
+    [RatingID]             INT             NULL,
+    [RedemptionMethodID]   INT             NULL,
+    [RedemptionType]       INT             NULL,
+    [RewardType]           INT             NULL,
+    [Title]                NVARCHAR (MAX)  NULL,
+    [ValidDaysAndTime]     NVARCHAR (1000) NULL,
+    [ValidFrom]            DATETIME        NULL,
+    [ValidTo]              DATETIME        NULL,
+    [WhoNegotiatedTEN]     INT             NULL,
+    [SYS_CHANGE_OPERATION] NVARCHAR (1)    NULL,
+    [SYS_CHANGE_VERSION]   BIGINT          NULL,
+    CONSTRAINT [PK_TenMAID_US_Tbl_MemberBenefitCards_Staging] PRIMARY KEY CLUSTERED ([MemberBenefitID] ASC)
+);
+

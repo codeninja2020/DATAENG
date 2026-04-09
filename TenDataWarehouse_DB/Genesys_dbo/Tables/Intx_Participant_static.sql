@@ -1,0 +1,24 @@
+﻿CREATE TABLE [Genesys_dbo].[Intx_Participant_static] (
+    [CallIDKey]              CHAR (18)      NOT NULL,
+    [ConnValue]              NVARCHAR (255) NULL,
+    [DisplayName]            NVARCHAR (128) NULL,
+    [Duration]               INT            NULL,
+    [EnumUpdateFlag]         TINYINT        NULL,
+    [HowEnded]               TINYINT        NULL,
+    [IndivID]                CHAR (22)      NOT NULL,
+    [Intx_Part_ID]           CHAR (22)      NOT NULL,
+    [IntxID]                 CHAR (22)      NOT NULL,
+    [IntxPartDateOffset]     INT            NULL,
+    [Recorded]               TINYINT        NULL,
+    [RecordingStartOffset]   INT            NULL,
+    [RecordingStopOffset]    INT            NULL,
+    [Role]                   TINYINT        NOT NULL,
+    [SecLevelRequested]      TINYINT        NULL,
+    [SecLevelViolationError] NVARCHAR (128) NULL,
+    [StartDateTime]          DATETIME2 (7)  NOT NULL,
+    [StationName]            NVARCHAR (50)  NULL,
+    [Version]                INT            NULL,
+    [WrapUpCode]             NVARCHAR (50)  NULL,
+    [WrapupSegmentID]        SMALLINT       NULL
+);
+

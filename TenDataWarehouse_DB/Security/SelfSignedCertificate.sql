@@ -1,0 +1,4 @@
+﻿CREATE CERTIFICATE [SelfSignedCertificate]
+    AUTHORIZATION [dbo]
+    WITH SUBJECT = N'Password Encryption', START_DATE = N'2019-09-16T09:06:17', EXPIRY_DATE = N'2020-09-16T09:06:17';
+

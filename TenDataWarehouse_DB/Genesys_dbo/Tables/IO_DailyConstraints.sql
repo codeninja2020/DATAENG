@@ -1,0 +1,28 @@
+﻿CREATE TABLE [Genesys_dbo].[IO_DailyConstraints] (
+    [ActiveDays]               INT            NULL,
+    [AgentID]                  CHAR (22)      NULL,
+    [DailyConstraintsID]       CHAR (22)      NOT NULL,
+    [DailyConstraintsName]     NVARCHAR (100) NULL,
+    [EarliestStartTimeUTC]     DATETIME       NOT NULL,
+    [LatestStartTimeUTC]       DATETIME       NOT NULL,
+    [LatestStopTimeUTC]        DATETIME       NOT NULL,
+    [MaximumContiguousTime]    INT            NOT NULL,
+    [MaximumPaidTime]          INT            NOT NULL,
+    [MinimumContiguousTime]    INT            NOT NULL,
+    [MinimumPaidTime]          INT            NOT NULL,
+    [ModifierUserID]           NVARCHAR (100) NULL,
+    [ModifyDateTimeUTC]        DATETIME       NULL,
+    [ShiftDefinitionID]        CHAR (22)      NULL,
+    [StartTimeIncrement]       INT            NOT NULL,
+    [StartTimeVariance]        INT            NULL,
+    [UseEarliestStartTime]     TINYINT        NOT NULL,
+    [UseLatestStopTime]        TINYINT        NOT NULL,
+    [UseMaximumContiguousTime] TINYINT        NOT NULL,
+    [UseMaximumPaidTime]       TINYINT        NOT NULL,
+    [UseMinimumContiguousTime] TINYINT        NOT NULL,
+    [UseMinimumPaidTime]       TINYINT        NOT NULL,
+    [UseStartTimeVariance]     TINYINT        NULL,
+    [Version]                  INT            NOT NULL,
+    CONSTRAINT [PK_Genesys_dbo_IO_DailyConstraints] PRIMARY KEY CLUSTERED ([DailyConstraintsID] ASC)
+);
+

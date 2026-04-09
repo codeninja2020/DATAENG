@@ -1,0 +1,27 @@
+﻿CREATE TABLE [TenMAID_Global].[OnlineSync_Members] (
+    [BatchId]                       UNIQUEIDENTIFIER NULL,
+    [CountryID]                     NCHAR (2)        NULL,
+    [DateCreated]                   DATETIME         NULL,
+    [DateUpdated]                   DATETIME         NULL,
+    [DOB]                           DATETIME         NULL,
+    [DolphinID]                     VARCHAR (50)     NULL,
+    [Gender]                        CHAR (1)         NULL,
+    [LanguageID]                    NVARCHAR (100)   NULL,
+    [Member_RecordUpdatedDateTime]  DATETIME         NOT NULL,
+    [Member_SentToPlatformDateTime] DATETIME         NULL,
+    [MemberID]                      INT              NOT NULL,
+    [Members_OnlineSync_ID]         INT              NOT NULL,
+    [MembershipStatusID]            INT              NULL,
+    [PreferredContactPhone]         NVARCHAR (200)   NULL,
+    [PreferredTravelLM]             INT              NULL,
+    [PrimaryEmail]                  NVARCHAR (255)   NULL,
+    [PrimaryLM]                     INT              NULL,
+    [RecordRefId]                   UNIQUEIDENTIFIER NOT NULL,
+    [SchemeID]                      INT              NULL,
+    [ServiceLevelTypeId]            INT              NULL,
+    [Status]                        INT              NULL,
+    [TitleId]                       INT              NULL,
+    [UpdatedBy]                     INT              NULL,
+    CONSTRAINT [PK_TenMAID_Global_OnlineSync_Members] PRIMARY KEY CLUSTERED ([Members_OnlineSync_ID] ASC)
+);
+

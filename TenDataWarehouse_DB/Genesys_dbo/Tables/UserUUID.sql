@@ -1,0 +1,7 @@
+﻿CREATE TABLE [Genesys_dbo].[UserUUID] (
+    [ICUserID] NVARCHAR (50)    NULL,
+    [UUID]     UNIQUEIDENTIFIER NOT NULL,
+    [UserUUID] INT              IDENTITY (1, 1) NOT NULL,
+    CONSTRAINT [PK_Genesys_dbo_UserUUID_UserUUID] PRIMARY KEY CLUSTERED ([UserUUID] ASC)
+);
+

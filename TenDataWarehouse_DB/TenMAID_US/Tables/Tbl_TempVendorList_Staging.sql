@@ -1,0 +1,25 @@
+﻿CREATE TABLE [TenMAID_US].[Tbl_TempVendorList_Staging] (
+    [Address]              NVARCHAR (200)  NULL,
+    [BookingRefNo]         NVARCHAR (200)  NULL,
+    [Commissioned]         BIT             NULL,
+    [CountryId]            INT             NULL,
+    [CreatedBy]            INT             NULL,
+    [CreatedDate]          DATE            NULL,
+    [CreateVendorCard]     BIT             NULL,
+    [DateUpdated]          DATETIME        NULL,
+    [EstBookingValue]      INT             NULL,
+    [EstSupRevenue]        INT             NULL,
+    [GeneralContactPhone]  NVARCHAR (50)   NULL,
+    [Isselected]           BIT             NULL,
+    [JobID]                INT             NULL,
+    [NoOfBooking]          INT             NULL,
+    [TempJobVendorsID]     INT             NOT NULL,
+    [UpdatedBy]            INT             NULL,
+    [Urgent]               BIT             NULL,
+    [VendorName]           NVARCHAR (200)  NULL,
+    [WebSiteAddress]       NVARCHAR (1000) NULL,
+    [SYS_CHANGE_OPERATION] NVARCHAR (1)    NULL,
+    [SYS_CHANGE_VERSION]   BIGINT          NULL,
+    CONSTRAINT [PK_TenMAID_US_Tbl_TempVendorList_Staging] PRIMARY KEY CLUSTERED ([TempJobVendorsID] ASC)
+);
+

@@ -1,0 +1,27 @@
+﻿CREATE TABLE [Genesys_dbo].[IO_HeadcountForecastStats] (
+    [AdjustedResourcesRequired] NUMERIC (18)    NOT NULL,
+    [AgentOccupancy]            NUMERIC (18)    NOT NULL,
+    [AverageDelay]              NUMERIC (18)    NOT NULL,
+    [AverageQueueLength1]       NUMERIC (18)    NOT NULL,
+    [AverageQueueLength2]       NUMERIC (18)    NOT NULL,
+    [AverageSpeedOfAnswer]      NUMERIC (18)    NOT NULL,
+    [Duration]                  INT             NOT NULL,
+    [HeadcountForecastID]       CHAR (22)       NOT NULL,
+    [HeadcountForecastStatsID]  CHAR (22)       NOT NULL,
+    [InteractionType]           INT             NOT NULL,
+    [IntervalStartUTC]          DATETIME        NOT NULL,
+    [ModifierUserID]            NVARCHAR (100)  NULL,
+    [ModifyDateTimeUTC]         DATETIME        NULL,
+    [ProbabilityOfDelay]        NUMERIC (18)    NOT NULL,
+    [ResourcesRequired]         INT             NOT NULL,
+    [ResourcesRequiredDecimal]  NUMERIC (18)    NULL,
+    [ServiceLevel]              NUMERIC (18)    NOT NULL,
+    [ShrinkageFactor]           NUMERIC (18)    NOT NULL,
+    [SiteID]                    INT             NULL,
+    [SkillSet]                  NVARCHAR (2000) NULL,
+    [Version]                   INT             NOT NULL,
+    [VolumeForecastStatsID]     CHAR (22)       NULL,
+    [WorkgroupName]             NVARCHAR (1000) NOT NULL,
+    CONSTRAINT [PK_Genesys_dbo_IO_HeadcountForecastStats] PRIMARY KEY CLUSTERED ([HeadcountForecastStatsID] ASC)
+);
+

@@ -1,0 +1,28 @@
+﻿CREATE TABLE [Genesys_dbo].[IPA_Flows] (
+    [CompleteReason]         NVARCHAR (256)   NULL,
+    [CurrentStateExecID]     UNIQUEIDENTIFIER NULL,
+    [DynamicDetails]         NVARCHAR (MAX)   NULL,
+    [EndDateTime]            DATETIME2 (7)    NULL,
+    [EndDateTimeOffset]      INT              NULL,
+    [FlowExecID]             UNIQUEIDENTIFIER NOT NULL,
+    [FlowID]                 UNIQUEIDENTIFIER NOT NULL,
+    [FlowType]               INT              NOT NULL,
+    [InitialActionExecID]    UNIQUEIDENTIFIER NULL,
+    [InitialStateExecID]     UNIQUEIDENTIFIER NULL,
+    [JobExecID]              UNIQUEIDENTIFIER NOT NULL,
+    [LaunchSource]           NVARCHAR (256)   NOT NULL,
+    [LaunchSourceIndivID]    CHAR (22)        NULL,
+    [LaunchType]             SMALLINT         NOT NULL,
+    [MajorRevision]          INT              NOT NULL,
+    [MinorRevision]          INT              NOT NULL,
+    [NumericID]              INT              NULL,
+    [StartDateTime]          DATETIME2 (7)    NOT NULL,
+    [StartDateTimeOffset]    INT              NOT NULL,
+    [StatusID]               SMALLINT         NOT NULL,
+    [StatusModifiedDT]       DATETIME2 (7)    NULL,
+    [StatusModifiedDTOffset] INT              NULL,
+    [Version]                INT              NOT NULL,
+    [XMLResultdata]          XML              NULL,
+    CONSTRAINT [PK_Genesys_dbo_IPA_Flows] PRIMARY KEY CLUSTERED ([FlowExecID] ASC)
+);
+

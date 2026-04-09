@@ -1,0 +1,25 @@
+﻿CREATE TABLE [TenMAID_Global].[JobInvoiceDetails_Staging] (
+    [CurrencyID]                      INT            NULL,
+    [Department]                      INT            NULL,
+    [InvoiceCost]                     MONEY          NULL,
+    [InvoiceCostInOtherCurrency]      MONEY          NULL,
+    [InvoiceTotalCost]                MONEY          NULL,
+    [InvoiceTotalCostInOtherCurrency] MONEY          NULL,
+    [InvoiceVAT]                      FLOAT (53)     NULL,
+    [InvoiceVATInOtherCurrency]       FLOAT (53)     NULL,
+    [InvoiceVATPercentage]            FLOAT (53)     NULL,
+    [JobBookingDate]                  DATETIME       NULL,
+    [JobCommission]                   MONEY          NULL,
+    [JobCost]                         MONEY          NULL,
+    [JobCurrencyID]                   INT            NULL,
+    [JobID]                           INT            NULL,
+    [JobInvoiceDetailID]              INT            NOT NULL,
+    [JobInvoiceID]                    INT            NULL,
+    [JobReference]                    NVARCHAR (250) NULL,
+    [MemberID]                        INT            NULL,
+    [SupplierInvoiceItemID]           INT            NULL,
+    [SYS_CHANGE_OPERATION]            NVARCHAR (1)   NULL,
+    [SYS_CHANGE_VERSION]              BIGINT         NULL,
+    CONSTRAINT [PK_TenMAID_Global_JobInvoiceDetails_Staging] PRIMARY KEY CLUSTERED ([JobInvoiceDetailID] ASC)
+);
+

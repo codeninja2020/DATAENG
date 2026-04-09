@@ -1,0 +1,5 @@
+﻿CREATE SYMMETRIC KEY [SQLSymmetricKey]
+    AUTHORIZATION [dbo]
+    WITH ALGORITHM = AES_128
+    ENCRYPTION BY CERTIFICATE [SelfSignedCertificate];
+
