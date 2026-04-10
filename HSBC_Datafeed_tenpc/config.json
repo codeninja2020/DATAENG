@@ -1,0 +1,64 @@
+{
+  "_comment": "Set each field to true to require it or false to make it optional. Optional fields have not_null disabled automatically.",
+
+  "required_fields": {
+    "CIN": true,
+    "Segment": false,
+    "first_name": true,
+    "last_name": true,
+    "address_line_1": true,
+    "address_line_2": false,
+    "state_region": false,
+    "town_city": false,
+    "post_code": false,
+    "country_code": false,
+    "language_code": false,
+    "email_address": true,
+    "date_of_birth": false,
+    "title_code": false,
+    "gender_code": false,
+    "Membership_status": true
+  },
+
+  "ten_standard": {
+    "primary_member_reference": true,
+    "secondary_member_reference": true,
+    "primary_programme_reference": true,
+    "secondary_programme_reference": false,
+    "account_type": true,
+    "parent_member_primary_reference": false,
+    "parent_member_relationship_code": false,
+    "membership_status": true,
+    "membership_start_date": false,
+    "membership_end_date": false,
+    "title_code": true,
+    "first_name": true,
+    "middle_name": false,
+    "last_name": true,
+    "gender_code": true,
+    "language_code": true,
+    "date_of_birth": true,
+    "street_number": true,
+    "address_line_1": true,
+    "address_line_2": true,
+    "post_code": true,
+    "town_city": true,
+    "state_region": true,
+    "country_code": true,
+    "business_phone": true,
+    "home_phone": true,
+    "main_phone": true,
+    "email_address": true,
+    "file_name": false,
+    "non_standard_fields": false
+  },
+
+  "defaults": {
+    "primary_programme_reference":2440
+  },
+
+  "feed_mode": "initial",
+  "deactivation_status_value": "INACTIVE",
+  "feedmode_options": "initial/incremental"
+
+}
