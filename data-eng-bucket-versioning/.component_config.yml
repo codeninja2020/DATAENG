@@ -1,0 +1,4 @@
+environments:
+  - qa
+  - staging
+  - prod

@@ -1,0 +1,6 @@
+CIN,segment,scheme_name,membership_status,title_code,first_name,last_name,gender_code,language_code,date_of_birth,address_line_1,address_line_2,town_city,state_region,post_code,country_code,email_address,main_phone,business_phone,home_phone
+G1651798125,UJADF,PrivateBank,1,143,Ismail Omran Mohamed,Elbeshlawi,1,EN,1976-06-09,"Flat 1, 92",St. Faiths Lane,Norwich,Norfolk,NR1 1AA,GB,ismail.elbeshlawi@example.com,+447700900123,+441603123456,+441603654321
+1457546183,ABX92,Premier,1,101,Laurence,Hubbard,1,EN,1976-06-09,14 Oak Avenue,West End,London,Greater London,SW1A 1AA,GB,laurence.hubbard@example.com,+447700900124,+442079461234,+442079461235
+G9823456712,ZXQ78,PrivateBank,0,143,Sarah,Johnson,2,EN,1984-03-15,22 Green Street,Apartment 5,Manchester,Greater Manchester,M1 2AB,GB,sarah.johnson@example.com,+447700900125,,+441612345678
+G7821345678,LMN45,Premier,1,105,Michael,Brown,1,EN,1990-11-21,78 Riverside Road,Suite 3,Birmingham,West Midlands,B1 1BB,GB,michael.brown@example.com,+447700900126,+441214567890,
+G4567891234,QWE23,PrivateBank,1,110,Emily,Davis,2,EN,1988-07-30,10 High Street,Building A,Bristol,South West,BS1 4DJ,GB,emily.davis@example.com,+447700900127,,+441179876543
