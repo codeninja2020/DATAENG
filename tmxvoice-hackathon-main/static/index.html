@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TenMAIDxVoice — AI Call Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='10' fill='%234e2e60'/%3E%3Cpath d='M10 13.5c0-.8.7-1.5 1.5-1.5h2.1c.4 0 .7.2.9.6l1.2 2.7c.2.4.1.9-.2 1.2l-1 1a8.9 8.9 0 0 0 4.5 4.5l1-1c.3-.3.8-.4 1.2-.2l2.7 1.2c.4.2.6.5.6.9v2.1c0 .8-.7 1.5-1.5 1.5C14.1 27 9 21.9 9 15.5' fill='white'/%3E%3C/svg%3E">
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --surface: #12121a;
+            --surface-2: #1a1a26;
+            --border: #2a2a3a;
+            --primary: #4e2e60;
+            --primary-hover: #6a3e80;
+            --success: #00b894;
+            --danger: #e74c3c;
+            --warning: #fdcb6e;
+            --text: #e8e8f0;
+            --text-muted: #8888a0;
+            --text-dim: #5a5a72;
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .header h1 span {
+            color: var(--primary);
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--success);
+            background: rgba(0, 184, 148, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 184, 148, 0.2);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-header h2 {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 14px;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            width: auto;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover {
+            background: var(--surface-2);
+            color: var(--text);
+        }
+
+        /* Call status */
+        .call-status {
+            margin-top: 16px;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .call-status.success {
+            display: block;
+            background: rgba(0, 184, 148, 0.1);
+            border: 1px solid rgba(0, 184, 148, 0.2);
+            color: var(--success);
+        }
+
+        .call-status.error {
+            display: block;
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.2);
+            color: var(--danger);
+        }
+
+        .call-status.loading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(108, 92, 231, 0.1);
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            color: var(--primary);
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Results list */
+        .results-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .results-count {
+            background: var(--primary);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            min-width: 22px;
+            text-align: center;
+        }
+
+        .results-list {
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+
+        .results-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .results-list::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        .result-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .result-item:hover {
+            background: var(--surface-2);
+        }
+
+        .result-item.active {
+            background: rgba(108, 92, 231, 0.08);
+            border-left: 3px solid var(--primary);
+        }
+
+        .result-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .result-id {
+            font-size: 12px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            color: var(--text-dim);
+        }
+
+        .result-status {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+            text-transform: uppercase;
+        }
+
+        .result-status.success {
+            background: rgba(0, 184, 148, 0.15);
+            color: var(--success);
+        }
+
+        .result-status.failure {
+            background: rgba(231, 76, 60, 0.15);
+            color: var(--danger);
+        }
+
+        .result-status.unknown {
+            background: rgba(253, 203, 110, 0.15);
+            color: var(--warning);
+        }
+
+        .result-summary {
+            font-size: 13px;
+            color: var(--text);
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .result-meta {
+            font-size: 11px;
+            color: var(--text-dim);
+            display: flex;
+            gap: 12px;
+        }
+
+        .empty-state {
+            padding: 48px 20px;
+            text-align: center;
+            color: var(--text-dim);
+        }
+
+        .empty-state .icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            font-size: 13px;
+        }
+
+        /* Detail panel */
+        .detail-panel {
+            display: none;
+        }
+
+        .detail-panel.visible {
+            display: block;
+        }
+
+        .detail-section {
+            margin-bottom: 20px;
+        }
+
+        .detail-section h3 {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .detail-stat {
+            background: var(--surface-2);
+            padding: 10px 14px;
+            border-radius: 8px;
+        }
+
+        .detail-stat .label {
+            font-size: 11px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .detail-stat .value {
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        /* Transcript */
+        .transcript {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .transcript-msg {
+            max-width: 85%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .transcript-msg.agent {
+            background: var(--surface-2);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .transcript-msg.user {
+            background: rgba(108, 92, 231, 0.15);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .transcript-msg .role {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-dim);
+            margin-bottom: 4px;
+        }
+
+        .transcript-msg.agent .role { color: var(--success); }
+        .transcript-msg.user .role { color: var(--primary); }
+
+        .transcript-msg .time {
+            font-size: 10px;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        /* Data collected */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table td {
+            padding: 8px 12px;
+            font-size: 13px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table td:first-child {
+            color: var(--text-muted);
+            font-weight: 600;
+            width: 40%;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab {
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-dim);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--text-muted);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Right panel views */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .right-panel .card {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-panel .results-list {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-left">
+        <div class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
+                <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/>
+            </svg>
+        </div>
+        <h1>TenMAIDx<span>Voice</span></h1>
+    </div>
+    <div class="status-badge">
+        <div class="status-dot"></div>
+        System Online
+    </div>
+</div>
+
+<div class="container">
+    <!-- Left: Make a Call -->
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <h2>📱 Make a Call</h2>
+            </div>
+            <div class="card-body">
+                <form id="callForm">
+                    <div class="form-group">
+                        <label>Phone Number *</label>
+                        <input type="tel" id="mobile" placeholder="+44XXXXXXXXX" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Customer Name</label>
+                        <input type="text" id="customer_id" placeholder="John Doe">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Booking Date</label>
+                            <input type="text" id="booking_date" placeholder="Friday">
+                        </div>
+                        <div class="form-group">
+                            <label>Booking Time</label>
+                            <input type="text" id="booking_time" placeholder="15:00">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Number of People</label>
+                            <input type="text" id="num_people" placeholder="5">
+                        </div>
+                        <div class="form-group">
+                            <label>Reason</label>
+                            <input type="text" id="reason" placeholder="Dinner booking">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="callBtn">
+                        📞 Start Call
+                    </button>
+                </form>
+                <div id="callStatus" class="call-status"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: Call Results -->
+    <div class="right-panel">
+        <div class="card">
+            <div class="card-header">
+                <div class="results-header">
+                    <h2>📋 Call Results</h2>
+                    <span class="results-count" id="resultsCount">0</span>
+                </div>
+                <button class="btn btn-sm btn-ghost" onclick="loadResults()">↻ Refresh</button>
+            </div>
+
+            <!-- No detail selected: show list -->
+            <div id="resultsList" class="results-list">
+                <div class="empty-state" id="emptyState">
+                    <div class="icon">📭</div>
+                    <p>No call results yet.<br>Make a call to see results here.</p>
+                </div>
+            </div>
+
+            <!-- Detail view -->
+            <div id="detailPanel" class="detail-panel">
+                <div class="tabs">
+                    <div class="tab active" data-tab="overview" onclick="switchTab('overview')">Overview</div>
+                    <div class="tab" data-tab="transcript" onclick="switchTab('transcript')">Transcript</div>
+                    <div class="tab" data-tab="data" onclick="switchTab('data')">Data Collected</div>
+                </div>
+
+                <div id="tab-overview" class="tab-content active">
+                    <div class="detail-section">
+                        <h3>Call Summary</h3>
+                        <p id="detailSummary" style="font-size:14px;line-height:1.6;color:var(--text);">—</p>
+                    </div>
+                    <div class="detail-section">
+                        <h3>Details</h3>
+                        <div class="detail-grid" id="detailGrid"></div>
+                    </div>
+                </div>
+
+                <div id="tab-transcript" class="tab-content">
+                    <div class="transcript" id="detailTranscript"></div>
+                </div>
+
+                <div id="tab-data" class="tab-content">
+                    <table class="data-table" id="detailDataTable">
+                        <tbody></tbody></tbody>
+                    </table>
+                </div>
+
+                <div style="padding:16px 20px;border-top:1px solid var(--border);">
+                    <button class="btn btn-sm btn-ghost" onclick="closeDetail()">← Back to list</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API = window.location.origin;
+
+    // ---- Make a Call ----
+    document.getElementById('callForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('callBtn');
+        const status = document.getElementById('callStatus');
+
+        const mobile = document.getElementById('mobile').value.trim();
+        if (!mobile) return;
+
+        const params = new URLSearchParams();
+        params.set('mobile', mobile);
+
+        const fields = ['customer_id', 'booking_date', 'booking_time', 'num_people', 'reason'];
+        fields.forEach(f => {
+            const val = document.getElementById(f).value.trim();
+            if (val) params.set(f, val);
+        });
+
+        btn.disabled = true;
+        btn.innerHTML = '<div class="spinner"></div> Calling...';
+        status.className = 'call-status loading';
+        status.innerHTML = '<div class="spinner"></div> Initiating call...';
+
+        try {
+            const res = await fetch(`${API}/request/call?${params.toString()}`);
+            const data = await res.json();
+
+            if (res.ok && data.status === 'ok') {
+                status.className = 'call-status success';
+                status.innerHTML = `✓ Call started! SID: <code>${data.call_sid}</code>`;
+                // Refresh results after a delay to catch the webhook
+                setTimeout(loadResults, 10000);
+                setTimeout(loadResults, 30000);
+                setTimeout(loadResults, 60000);
+            } else {
+                status.className = 'call-status error';
+                status.textContent = `✗ ${data.detail || 'Failed to start call'}`;
+            }
+        } catch (err) {
+            status.className = 'call-status error';
+            status.textContent = `✗ Network error: ${err.message}`;
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = '📞 Start Call';
+    });
+
+    // ---- Load Results ----
+    let allResults = [];
+
+    async function loadResults() {
+        try {
+            const res = await fetch(`${API}/call-results`);
+            const data = await res.json();
+            allResults = data.results || [];
+            renderResults();
+        } catch (err) {
+            console.error('Failed to load results:', err);
+        }
+    }
+
+    function renderResults() {
+        const list = document.getElementById('resultsList');
+        const count = document.getElementById('resultsCount');
+        const empty = document.getElementById('emptyState');
+
+        count.textContent = allResults.length;
+
+        if (allResults.length === 0) {
+            list.innerHTML = '';
+            list.appendChild(createEmptyState());
+            return;
+        }
+
+        list.innerHTML = allResults.map((r, i) => `
+            <div class="result-item" onclick="showDetail('${r.conversation_id}')">
+                <div class="result-top">
+                    <span class="result-id">${r.conversation_id || '—'}</span>
+                    <span class="result-status ${r.call_successful || 'unknown'}">${r.call_successful || 'pending'}</span>
+                </div>
+                <div class="result-summary">${r.transcript_summary || 'No summary available'}</div>
+                <div class="result-meta">
+                    <span>⏱ ${r.call_duration_secs != null ? r.call_duration_secs + 's' : '—'}</span>
+                    <span>💬 ${r.transcript_turns || 0} turns</span>
+                    ${r.termination_reason ? `<span>🏁 ${r.termination_reason}</span>` : ''}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function createEmptyState() {
+        const div = document.createElement('div');
+        div.className = 'empty-state';
+        div.innerHTML = '<div class="icon">📭</div><p>No call results yet.<br>Make a call to see results here.</p>';
+        return div;
+    }
+
+    // ---- Detail View ----
+    async function showDetail(conversationId) {
+        const panel = document.getElementById('detailPanel');
+        const list = document.getElementById('resultsList');
+
+        // Try to fetch full detail from webhook store first, then from ElevenLabs API
+        let detail = null;
+        try {
+            let res = await fetch(`${API}/call-results/${conversationId}`);
+            if (res.ok) {
+                detail = await res.json();
+            }
+        } catch (e) {}
+
+        // Also try ElevenLabs API for richer data
+        let apiDetail = null;
+        try {
+            let res = await fetch(`${API}/conversations/${conversationId}`);
+            if (res.ok) {
+                apiDetail = await res.json();
+            }
+        } catch (e) {}
+
+        // Merge: prefer API data for transcript, webhook data for raw event
+        const transcript = apiDetail?.transcript || detail?.transcript || [];
+        const analysis = apiDetail?.analysis || detail?.analysis || {};
+        const metadata = apiDetail?.metadata || detail?.metadata || {};
+
+        // Overview
+        document.getElementById('detailSummary').textContent =
+            analysis.transcript_summary || 'No summary available.';
+
+        const grid = document.getElementById('detailGrid');
+        grid.innerHTML = `
+            <div class="detail-stat">
+                <div class="label">Status</div>
+                <div class="value">${analysis.call_successful || 'unknown'}</div>
+            </div>
+            <div class="detail-stat">
+                <div class="label">Duration</div>
+                <div class="value">${metadata.call_duration_secs != null ? metadata.call_duration_secs + 's' : '—'}</div>
+            </div>
+            <div class="detail-stat">
+                <div class="label">Conversation ID</div>
+                <div class="value" style="font-size:11px;word-break:break-all;">${conversationId}</div>
+            </div>
+            <div class="detail-stat">
+                <div class="label">Termination</div>
+                <div class="value">${metadata.termination_reason || '—'}</div>
+            </div>
+        `;
+
+        // Transcript
+        const transcriptDiv = document.getElementById('detailTranscript');
+        if (transcript.length > 0) {
+            transcriptDiv.innerHTML = transcript.map(t => `
+                <div class="transcript-msg ${t.role}">
+                    <div class="role">${t.role}</div>
+                    ${t.message || '(no text)'}
+                    ${t.time_in_call_secs != null ? `<div class="time">${t.time_in_call_secs}s</div>` : ''}
+                </div>
+            `).join('');
+        } else {
+            transcriptDiv.innerHTML = '<div class="empty-state"><p>No transcript available.</p></div>';
+        }
+
+        // Data collected
+        const dataTable = document.querySelector('#detailDataTable tbody');
+        const collected = analysis.data_collection_results || {};
+        const keys = Object.keys(collected);
+        if (keys.length > 0) {
+            dataTable.innerHTML = keys.map(k => {
+                const v = typeof collected[k] === 'object' ? (collected[k].value ?? JSON.stringify(collected[k])) : collected[k];
+                return `<tr><td>${k}</td><td>${v}</td></tr>`;
+            }).join('');
+        } else {
+            dataTable.innerHTML = '<tr><td colspan="2" style="text-align:center;color:var(--text-dim);padding:24px;">No data collected</td></tr>';
+        }
+
+        // Show panel, hide list
+        list.style.display = 'none';
+        panel.classList.add('visible');
+        switchTab('overview');
+    }
+
+    function closeDetail() {
+        document.getElementById('detailPanel').classList.remove('visible');
+        document.getElementById('resultsList').style.display = 'block';
+    }
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tabId));
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.toggle('active', t.id === `tab-${tabId}`));
+    }
+
+    // ---- Auto-refresh ----
+    loadResults();
+    setInterval(loadResults, 15000);
+</script>
+
+</body>
+</html>
