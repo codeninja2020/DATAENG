@@ -1,0 +1,2 @@
+check_name,sql_check,table,operator,expected_value
+rpin-reference1-required,"SELECT 'Required - Reference1 (Primary member reference) must not be null' AS Error, MemberID, 'Reference1' AS Field, Reference1 AS Value FROM dbo.Members WHERE SchemeID IN (2388, 2378, 774, 2249, 2248) AND (Reference1 IS NULL OR LTRIM(RTRIM(Reference1)) = '')",dbo.Members,=,0
