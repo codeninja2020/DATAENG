@@ -3,5 +3,6 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Headroom" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/aws-mwaa-local-runner-2.10.3" vcs="Git" />
   </component>
 </project>
